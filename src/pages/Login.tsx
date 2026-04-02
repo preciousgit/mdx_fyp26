@@ -4,6 +4,24 @@ import { auth, db, googleProvider, signInWithPopup, doc, getDoc, setDoc, serverT
 import { useAuth, Role } from '../AuthContext';
 import { ShieldCheck, Package, Truck, UserCircle } from 'lucide-react';
 
+const getGoogleAuthErrorMessage = (errorCode?: string, rawMessage?: string) => {
+  switch (errorCode) {
+    case 'auth/configuration-not-found':
+    case 'auth/operation-not-allowed':
+      return 'Google sign-in is not enabled in this Firebase project. In Firebase Console, go to Authentication > Sign-in method and enable Google.';
+    case 'auth/unauthorized-domain':
+      return 'This domain is not authorized for Firebase Auth. Add your current host (for example localhost or your Vercel domain) in Authentication > Settings > Authorized domains.';
+    case 'auth/popup-blocked':
+      return 'The sign-in popup was blocked by your browser. Allow popups for this site and try again.';
+    case 'auth/popup-closed-by-user':
+      return 'The Google sign-in popup was closed before completion. Please try again and complete the flow.';
+    case 'permission-denied':
+      return 'Google sign-in succeeded, but Firestore access was denied while loading your profile. Deploy/update Firestore rules and try again.';
+    default:
+      return `Google login failed${errorCode ? ` (${errorCode})` : ''}${rawMessage ? `: ${rawMessage}` : '.'}`;
+  }
+};
+
 export default function Login() {
   const { user, profile, setProfile } = useAuth();
   const navigate = useNavigate();
@@ -40,13 +58,7 @@ export default function Login() {
     } catch (error: any) {
       console.error("Login error:", error);
       const errorCode = error?.code as string | undefined;
-      if (errorCode === 'auth/configuration-not-found') {
-        alert(
-          'Google sign-in is not configured for this Firebase project. In Firebase Console, go to Authentication > Sign-in method, enable Google, add your app domain (localhost), then try again.'
-        );
-      } else {
-        alert("Failed to login with Google. Please try again.");
-      }
+      alert(getGoogleAuthErrorMessage(errorCode, error?.message));
     } finally {
       setLoading(false);
     }
