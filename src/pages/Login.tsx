@@ -29,7 +29,7 @@ export default function Login() {
       const result = await signInWithPopup(auth, googleProvider);
       const userRef = doc(db, 'users', result.user.uid);
       const userSnap = await getDoc(userRef);
-      
+
       if (userSnap.exists()) {
         setProfile(userSnap.data() as any);
         navigate('/dashboard');
@@ -37,9 +37,16 @@ export default function Login() {
         setFullName(result.user.displayName || '');
         setNeedsRegistration(true);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login error:", error);
-      alert("Failed to login with Google. Please try again.");
+      const errorCode = error?.code as string | undefined;
+      if (errorCode === 'auth/configuration-not-found') {
+        alert(
+          'Google sign-in is not configured for this Firebase project. In Firebase Console, go to Authentication > Sign-in method, enable Google, add your app domain (localhost), then try again.'
+        );
+      } else {
+        alert("Failed to login with Google. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -56,7 +63,7 @@ export default function Login() {
         const result = await signInWithEmailAndPassword(auth, email, password);
         const userRef = doc(db, 'users', result.user.uid);
         const userSnap = await getDoc(userRef);
-        
+
         if (userSnap.exists()) {
           setProfile(userSnap.data() as any);
           navigate('/dashboard');
@@ -75,7 +82,7 @@ export default function Login() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!auth.currentUser) return;
-    
+
     try {
       setLoading(true);
       const newUser = {
@@ -89,7 +96,7 @@ export default function Login() {
         twoFactorEnabled: false,
         createdAt: serverTimestamp(),
       };
-      
+
       await setDoc(doc(db, 'users', auth.currentUser.uid), newUser);
       setProfile(newUser as any);
       navigate('/dashboard');
@@ -154,9 +161,9 @@ export default function Login() {
               </form>
 
               <div className="text-sm text-center mb-6">
-                <button 
-                  type="button" 
-                  onClick={() => setIsSignUp(!isSignUp)} 
+                <button
+                  type="button"
+                  onClick={() => setIsSignUp(!isSignUp)}
                   className="font-medium text-indigo-600 hover:text-indigo-500"
                 >
                   {isSignUp ? 'Already have an account? Sign in' : 'Need an account? Sign up'}
@@ -179,7 +186,7 @@ export default function Login() {
               >
                 {loading ? 'Signing in...' : 'Google'}
               </button>
-              
+
               <div className="mt-6">
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
@@ -213,9 +220,8 @@ export default function Login() {
                     <div
                       key={r.id}
                       onClick={() => setRole(r.id as Role)}
-                      className={`cursor-pointer border rounded-lg p-4 flex flex-col items-center justify-center ${
-                        role === r.id ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-300 hover:bg-gray-50'
-                      }`}
+                      className={`cursor-pointer border rounded-lg p-4 flex flex-col items-center justify-center ${role === r.id ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-300 hover:bg-gray-50'
+                        }`}
                     >
                       <r.icon className="h-6 w-6 mb-2" />
                       <span className="text-sm font-medium">{r.label}</span>
