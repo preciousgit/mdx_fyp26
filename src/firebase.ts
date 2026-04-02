@@ -35,7 +35,12 @@ if (!hasAllEnvFirebaseValues) {
 }
 
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+const firestoreDatabaseId = firebaseConfig.firestoreDatabaseId;
+const isDefaultFirestoreDb = !firestoreDatabaseId || firestoreDatabaseId === '(default)';
+
+export const db = isDefaultFirestoreDb
+  ? getFirestore(app)
+  : getFirestore(app, firestoreDatabaseId);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 

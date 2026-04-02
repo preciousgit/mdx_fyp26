@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth, db, googleProvider, signInWithPopup, doc, getDoc, setDoc, serverTimestamp, signInWithEmailAndPassword, createUserWithEmailAndPassword } from '../firebase';
+import { auth, db, googleProvider, signInWithPopup, signOut, doc, getDoc, setDoc, serverTimestamp, signInWithEmailAndPassword, createUserWithEmailAndPassword } from '../firebase';
 import { useAuth, Role } from '../AuthContext';
 import { ShieldCheck, Package, Truck, UserCircle } from 'lucide-react';
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const getGoogleAuthErrorMessage = (errorCode?: string, rawMessage?: string) => {
   switch (errorCode) {
@@ -17,6 +19,8 @@ const getGoogleAuthErrorMessage = (errorCode?: string, rawMessage?: string) => {
       return 'The Google sign-in popup was closed before completion. Please try again and complete the flow.';
     case 'permission-denied':
       return 'Google sign-in succeeded, but Firestore access was denied while loading your profile. Deploy/update Firestore rules and try again.';
+    case 'unavailable':
+      return 'Google sign-in succeeded, but Firestore is currently unreachable. Check your internet, disable VPN/ad blockers for this site, and make sure Firestore database is created in this Firebase project.';
     default:
       return `Google login failed${errorCode ? ` (${errorCode})` : ''}${rawMessage ? `: ${rawMessage}` : '.'}`;
   }
@@ -46,7 +50,19 @@ export default function Login() {
       setLoading(true);
       const result = await signInWithPopup(auth, googleProvider);
       const userRef = doc(db, 'users', result.user.uid);
-      const userSnap = await getDoc(userRef);
+      let userSnap;
+
+      try {
+        userSnap = await getDoc(userRef);
+      } catch (profileError: any) {
+        if (profileError?.code === 'unavailable') {
+          // Retry once for transient connection issues.
+          await wait(1200);
+          userSnap = await getDoc(userRef);
+        } else {
+          throw profileError;
+        }
+      }
 
       if (userSnap.exists()) {
         setProfile(userSnap.data() as any);
@@ -57,6 +73,10 @@ export default function Login() {
       }
     } catch (error: any) {
       console.error("Login error:", error);
+      if (error?.code === 'unavailable') {
+        // Avoid keeping a partially signed-in state when profile bootstrap cannot complete.
+        await signOut(auth);
+      }
       const errorCode = error?.code as string | undefined;
       alert(getGoogleAuthErrorMessage(errorCode, error?.message));
     } finally {
