@@ -1,0 +1,111 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user in the supply chain system (Producer, Distributor, Regulator, Consumer)",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "role": { "type": "string", "enum": ["producer", "distributor", "regulator", "consumer"] },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "companyName": { "type": "string" },
+        "companyPrefix": { "type": "string" },
+        "documentsVerified": { "type": "boolean" },
+        "twoFactorEnabled": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "role", "name", "email", "createdAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "A traceable product in the supply chain",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "producerId": { "type": "string" },
+        "producerName": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "packagingType": { "type": "string" },
+        "weight": { "type": "string" },
+        "size": { "type": "string" },
+        "status": { "type": "string", "enum": ["registered", "in-transit", "flagged", "approved", "rejected", "delivered"] },
+        "riskScore": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "producerId", "producerName", "name", "category", "status", "riskScore", "createdAt"]
+    },
+    "Event": {
+      "title": "Event",
+      "description": "An immutable event in the product's history (simulated blockchain block)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "productId": { "type": "string" },
+        "type": { "type": "string", "enum": ["CREATED", "HANDOFF", "INSPECTION", "CONSUMER_REPORT"] },
+        "actorId": { "type": "string" },
+        "actorName": { "type": "string" },
+        "actorRole": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "data": { "type": "object" },
+        "previousHash": { "type": "string" },
+        "hash": { "type": "string" }
+      },
+      "required": ["id", "productId", "type", "actorId", "actorName", "actorRole", "timestamp", "data", "hash"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "A consumer review for a product",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "productId": { "type": "string" },
+        "consumerId": { "type": "string" },
+        "consumerName": { "type": "string" },
+        "rating": { "type": "number" },
+        "comment": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "productId", "consumerId", "consumerName", "rating", "comment", "timestamp"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "System notification for a user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "read": { "type": "boolean" },
+        "type": { "type": "string", "enum": ["RISK_ALERT", "COMPLIANCE", "SYSTEM"] },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "title", "message", "read", "type", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles"
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Products registered in the system"
+    },
+    "/events/{eventId}": {
+      "schema": { "$ref": "#/entities/Event" },
+      "description": "Immutable product events"
+    },
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/Review" },
+      "description": "Product reviews"
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/Notification" },
+      "description": "User notifications"
+    }
+  }
+}

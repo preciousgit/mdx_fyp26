@@ -1,0 +1,250 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: uid
+    // Fields:
+    //   - uid: string (required)
+    //   - role: string (required, enum: producer, distributor, regulator, consumer)
+    //   - name: string (required)
+    //   - email: string (required)
+    //   - companyName: string (optional)
+    //   - companyPrefix: string (optional)
+    //   - documentsVerified: boolean (optional)
+    //   - twoFactorEnabled: boolean (optional)
+    //   - createdAt: timestamp (required)
+    //
+    // Collection: products
+    // Document ID: id
+    // Fields:
+    //   - id: string (required)
+    //   - producerId: string (required)
+    //   - producerName: string (required)
+    //   - name: string (required)
+    //   - description: string (optional)
+    //   - category: string (required)
+    //   - status: string (required, enum: registered, in-transit, flagged, approved, rejected, delivered)
+    //   - riskScore: number (required)
+    //   - createdAt: timestamp (required)
+    //
+    // Collection: events
+    // Document ID: id
+    // Fields:
+    //   - id: string (required)
+    //   - productId: string (required)
+    //   - type: string (required, enum: CREATED, HANDOFF, INSPECTION, CONSUMER_REPORT)
+    //   - actorId: string (required)
+    //   - actorName: string (required)
+    //   - actorRole: string (required)
+    //   - timestamp: timestamp (required)
+    //   - data: map (required)
+    //   - previousHash: string (optional)
+    //   - hash: string (required)
+    //
+    // Collection: reviews
+    // Document ID: id
+    // Fields:
+    //   - id: string (required)
+    //   - productId: string (required)
+    //   - consumerId: string (required)
+    //   - consumerName: string (required)
+    //   - rating: number (required)
+    //   - comment: string (required)
+    //   - timestamp: timestamp (required)
+    //
+    // Collection: notifications
+    // Document ID: id
+    // Fields:
+    //   - id: string (required)
+    //   - userId: string (required)
+    //   - title: string (required)
+    //   - message: string (required)
+    //   - read: boolean (required)
+    //   - type: string (required, enum: RISK_ALERT, COMPLIANCE, SYSTEM)
+    //   - timestamp: timestamp (required)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function hasRole(role) {
+      return isAuthenticated() && getUserData().role == role;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+    
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function areImmutableFieldsUnchanged(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return hasRequiredFields(['uid', 'role', 'name', 'email', 'createdAt']) &&
+             data.uid is string && data.uid.size() > 0 && data.uid.size() < 100 &&
+             data.role in ['producer', 'distributor', 'regulator', 'consumer'] &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.email is string && isValidEmail(data.email) && data.email.size() < 150 &&
+             data.createdAt is timestamp &&
+             (!('companyName' in data) || (data.companyName is string && data.companyName.size() < 100)) &&
+             (!('companyPrefix' in data) || (data.companyPrefix is string && data.companyPrefix.size() < 20)) &&
+             (!('phoneNumber' in data) || (data.phoneNumber is string && data.phoneNumber.size() < 20)) &&
+             (!('documentsVerified' in data) || data.documentsVerified is bool) &&
+             (!('twoFactorEnabled' in data) || data.twoFactorEnabled is bool);
+    }
+
+    function isValidProduct(data) {
+      return hasRequiredFields(['id', 'producerId', 'producerName', 'name', 'category', 'status', 'riskScore', 'createdAt']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() < 100 &&
+             data.producerId is string && data.producerId.size() > 0 && data.producerId.size() < 100 &&
+             data.producerName is string && data.producerName.size() > 0 && data.producerName.size() < 100 &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 200 &&
+             data.category is string && data.category.size() > 0 && data.category.size() < 100 &&
+             data.status in ['registered', 'in-transit', 'flagged', 'approved', 'rejected', 'delivered'] &&
+             data.riskScore is number && data.riskScore >= 0 && data.riskScore <= 100 &&
+             data.createdAt is timestamp &&
+             (!('description' in data) || (data.description is string && data.description.size() < 2000)) &&
+             (!('packagingType' in data) || (data.packagingType is string && data.packagingType.size() < 50)) &&
+             (!('weight' in data) || (data.weight is string && data.weight.size() < 50)) &&
+             (!('size' in data) || (data.size is string && data.size.size() < 50));
+    }
+
+    function isValidEvent(data) {
+      return hasRequiredFields(['id', 'productId', 'type', 'actorId', 'actorName', 'actorRole', 'timestamp', 'data', 'hash']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() < 100 &&
+             data.productId is string && data.productId.size() > 0 && data.productId.size() < 100 &&
+             data.type in ['CREATED', 'HANDOFF', 'INSPECTION', 'CONSUMER_REPORT'] &&
+             data.actorId is string && data.actorId.size() > 0 && data.actorId.size() < 100 &&
+             data.actorName is string && data.actorName.size() > 0 && data.actorName.size() < 100 &&
+             data.actorRole is string && data.actorRole.size() > 0 && data.actorRole.size() < 50 &&
+             data.timestamp is timestamp &&
+             data.data is map &&
+             data.hash is string && data.hash.size() > 0 && data.hash.size() < 200 &&
+             (!('previousHash' in data) || (data.previousHash is string && data.previousHash.size() < 200));
+    }
+
+    function isValidReview(data) {
+      return hasRequiredFields(['id', 'productId', 'consumerId', 'consumerName', 'rating', 'comment', 'timestamp']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() < 100 &&
+             data.productId is string && data.productId.size() > 0 && data.productId.size() < 100 &&
+             data.consumerId is string && data.consumerId.size() > 0 && data.consumerId.size() < 100 &&
+             data.consumerName is string && data.consumerName.size() > 0 && data.consumerName.size() < 100 &&
+             data.rating is number && data.rating >= 1 && data.rating <= 5 &&
+             data.comment is string && data.comment.size() >= 0 && data.comment.size() < 1000 &&
+             data.timestamp is timestamp;
+    }
+
+    function isValidNotification(data) {
+      return hasRequiredFields(['id', 'userId', 'title', 'message', 'read', 'type', 'timestamp']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() < 100 &&
+             data.userId is string && data.userId.size() > 0 && data.userId.size() < 100 &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.message is string && data.message.size() > 0 && data.message.size() < 1000 &&
+             data.read is bool &&
+             data.type in ['RISK_ALERT', 'COMPLIANCE', 'SYSTEM'] &&
+             data.timestamp is timestamp;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      // Users can read their own profile. Other users can read public info (like name/role) if needed, 
+      // but to be safe, we'll allow authenticated users to read basic profiles to show actor names.
+      allow read: if isAuthenticated();
+      
+      // Users can create their own profile. They cannot set themselves as regulator unless they are already one (bootstrapping needed in real app).
+      // For this prototype, we allow creating any role on signup.
+      allow create: if isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.uid == userId;
+      
+      // Users can update their own profile, but cannot change their uid or role.
+      allow update: if isOwner(userId) && isValidUser(request.resource.data) && 
+                    areImmutableFieldsUnchanged(['uid', 'role', 'createdAt']);
+    }
+
+    match /products/{productId} {
+      // Anyone authenticated can read products (consumers need to verify).
+      // Actually, consumers might not be authenticated to verify, but let's assume they are for now, or allow public read of products.
+      allow read: if true;
+
+      // Only producers can create products.
+      allow create: if isAuthenticated() && isValidProduct(request.resource.data) && 
+                    request.resource.data.producerId == request.auth.uid;
+
+      // Producers, Distributors, Regulators can update products (e.g., status, riskScore).
+      allow update: if isAuthenticated() && isValidProduct(request.resource.data) &&
+                    areImmutableFieldsUnchanged(['id', 'producerId', 'createdAt']);
+    }
+
+    match /events/{eventId} {
+      // Events are the blockchain ledger. They are public to read.
+      allow read: if true;
+
+      // Authenticated users can create events.
+      allow create: if isAuthenticated() && isValidEvent(request.resource.data) &&
+                    request.resource.data.actorId == request.auth.uid;
+
+      // Events are IMMUTABLE. No updates or deletes allowed.
+      allow update, delete: if false;
+    }
+
+    match /reviews/{reviewId} {
+      // Public read
+      allow read: if true;
+
+      // Consumers can create reviews
+      allow create: if isAuthenticated() && isValidReview(request.resource.data) &&
+                    request.resource.data.consumerId == request.auth.uid;
+
+      // Consumers can update their own reviews
+      allow update: if isOwner(resource.data.consumerId) && isValidReview(request.resource.data) &&
+                    areImmutableFieldsUnchanged(['id', 'productId', 'consumerId', 'timestamp']);
+    }
+
+    match /notifications/{notificationId} {
+      // Users can only read their own notifications
+      allow read: if isOwner(resource.data.userId);
+
+      // System creates notifications (in a real app, via Cloud Functions). 
+      // For this prototype, we allow authenticated users to create notifications for others (e.g., regulator flagging a product).
+      allow create: if isAuthenticated() && isValidNotification(request.resource.data);
+
+      // Users can mark their notifications as read
+      allow update: if isOwner(resource.data.userId) && isValidNotification(request.resource.data) &&
+                    areImmutableFieldsUnchanged(['id', 'userId', 'title', 'message', 'type', 'timestamp']);
+    }
+  }
+}
