@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth, db, onAuthStateChanged, doc, getDoc, setDoc, serverTimestamp } from './firebase';
-import { User } from 'firebase/auth';
+import { api, clearToken, setToken } from './api';
 
 export type Role = 'producer' | 'distributor' | 'regulator' | 'consumer';
 
@@ -14,14 +13,24 @@ export interface UserProfile {
   companyPrefix?: string;
   documentsVerified: boolean;
   twoFactorEnabled: boolean;
+  walletAddress?: string;
+  address?: string;
+  avatar?: string;
   createdAt: any;
 }
 
+export interface AuthUser {
+  uid: string;
+  email: string;
+}
+
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   profile: UserProfile | null;
   loading: boolean;
   setProfile: (profile: UserProfile) => void;
+  login: (token: string, profile: UserProfile) => void;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -29,39 +38,44 @@ const AuthContext = createContext<AuthContextType>({
   profile: null,
   loading: true,
   setProfile: () => {},
+  login: () => {},
+  logout: () => {},
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setUser(firebaseUser);
-      if (firebaseUser) {
-        try {
-          const docRef = doc(db, 'users', firebaseUser.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            setProfile(docSnap.data() as UserProfile);
-          } else {
-            setProfile(null); // Needs to complete registration
-          }
-        } catch (error) {
-          console.error("Error fetching user profile:", error);
-        }
-      } else {
-        setProfile(null);
-      }
+    const token = localStorage.getItem('authToken');
+    if (!token) {
       setLoading(false);
-    });
-
-    return () => unsubscribe();
+      return;
+    }
+    api.auth.me()
+      .then((data: UserProfile) => {
+        setProfile(data);
+        setUser({ uid: data.uid, email: data.email });
+      })
+      .catch(() => clearToken())
+      .finally(() => setLoading(false));
   }, []);
 
+  const login = (token: string, profileData: UserProfile) => {
+    setToken(token);
+    setProfile(profileData);
+    setUser({ uid: profileData.uid, email: profileData.email });
+  };
+
+  const logout = () => {
+    clearToken();
+    setUser(null);
+    setProfile(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, profile, loading, setProfile }}>
+    <AuthContext.Provider value={{ user, profile, loading, setProfile, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

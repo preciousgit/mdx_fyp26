@@ -1,111 +1,54 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { auth, db, googleProvider, signInWithPopup, signOut, doc, getDoc, setDoc, serverTimestamp, signInWithEmailAndPassword, createUserWithEmailAndPassword } from '../firebase';
+import { useNavigate, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
+import { api } from '../api';
 import { useAuth, Role } from '../AuthContext';
-import { ShieldCheck, Package, Truck, UserCircle } from 'lucide-react';
+import { ShieldCheck, Package, Truck, UserCircle, ArrowRight, Eye, EyeOff, ChevronLeft } from 'lucide-react';
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const getGoogleAuthErrorMessage = (errorCode?: string, rawMessage?: string) => {
-  switch (errorCode) {
-    case 'auth/configuration-not-found':
-    case 'auth/operation-not-allowed':
-      return 'Google sign-in is not enabled in this Firebase project. In Firebase Console, go to Authentication > Sign-in method and enable Google.';
-    case 'auth/unauthorized-domain':
-      return 'This domain is not authorized for Firebase Auth. Add your current host (for example localhost or your Vercel domain) in Authentication > Settings > Authorized domains.';
-    case 'auth/popup-blocked':
-      return 'The sign-in popup was blocked by your browser. Allow popups for this site and try again.';
-    case 'auth/popup-closed-by-user':
-      return 'The Google sign-in popup was closed before completion. Please try again and complete the flow.';
-    case 'permission-denied':
-      return 'Google sign-in succeeded, but Firestore access was denied while loading your profile. Deploy/update Firestore rules and try again.';
-    case 'unavailable':
-      return 'Google sign-in succeeded, but Firestore is currently unreachable. Check your internet, disable VPN/ad blockers for this site, and make sure Firestore database is created in this Firebase project.';
-    default:
-      return `Google login failed${errorCode ? ` (${errorCode})` : ''}${rawMessage ? `: ${rawMessage}` : '.'}`;
-  }
-};
+const roles = [
+  { id: 'producer', icon: Package, label: 'Producer', desc: 'Register & track your products', gradient: 'from-indigo-500 to-blue-500' },
+  { id: 'distributor', icon: Truck, label: 'Distributor', desc: 'Log handoffs & conditions', gradient: 'from-violet-500 to-purple-500' },
+  { id: 'regulator', icon: ShieldCheck, label: 'Regulator', desc: 'Review & approve flagged items', gradient: 'from-emerald-500 to-teal-500' },
+  { id: 'consumer', icon: UserCircle, label: 'Consumer', desc: 'Verify products & leave reviews', gradient: 'from-amber-500 to-orange-500' },
+];
 
 export default function Login() {
-  const { user, profile, setProfile } = useAuth();
+  const { user, profile, login } = useAuth();
   const navigate = useNavigate();
+  const [step, setStep] = useState<'auth' | 'role'>('auth');
+  const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [needsRegistration, setNeedsRegistration] = useState(false);
+  const [showPass, setShowPass] = useState(false);
   const [role, setRole] = useState<Role>('consumer');
-  const [companyName, setCompanyName] = useState('');
-  const [companyPrefix, setCompanyPrefix] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
   const [fullName, setFullName] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [companyPrefix, setCompanyPrefix] = useState('');
+  const [pendingEmail, setPendingEmail] = useState('');
+  const [pendingPassword, setPendingPassword] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    if (user && profile) {
-      navigate('/dashboard');
-    }
+    if (user && profile) navigate('/dashboard');
   }, [user, profile, navigate]);
-
-  const handleGoogleLogin = async () => {
-    try {
-      setLoading(true);
-      const result = await signInWithPopup(auth, googleProvider);
-      const userRef = doc(db, 'users', result.user.uid);
-      let userSnap;
-
-      try {
-        userSnap = await getDoc(userRef);
-      } catch (profileError: any) {
-        if (profileError?.code === 'unavailable') {
-          // Retry once for transient connection issues.
-          await wait(1200);
-          userSnap = await getDoc(userRef);
-        } else {
-          throw profileError;
-        }
-      }
-
-      if (userSnap.exists()) {
-        setProfile(userSnap.data() as any);
-        navigate('/dashboard');
-      } else {
-        setFullName(result.user.displayName || '');
-        setNeedsRegistration(true);
-      }
-    } catch (error: any) {
-      console.error("Login error:", error);
-      if (error?.code === 'unavailable') {
-        // Avoid keeping a partially signed-in state when profile bootstrap cannot complete.
-        await signOut(auth);
-      }
-      const errorCode = error?.code as string | undefined;
-      alert(getGoogleAuthErrorMessage(errorCode, error?.message));
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     try {
       setLoading(true);
       if (isSignUp) {
-        const result = await createUserWithEmailAndPassword(auth, email, password);
-        setNeedsRegistration(true);
+        setPendingEmail(email);
+        setPendingPassword(password);
+        setStep('role');
       } else {
-        const result = await signInWithEmailAndPassword(auth, email, password);
-        const userRef = doc(db, 'users', result.user.uid);
-        const userSnap = await getDoc(userRef);
-
-        if (userSnap.exists()) {
-          setProfile(userSnap.data() as any);
-          navigate('/dashboard');
-        } else {
-          setNeedsRegistration(true);
-        }
+        const result = await api.auth.login(email, password);
+        login(result.token, result.user);
+        navigate('/dashboard');
       }
-    } catch (error: any) {
-      console.error("Email auth error:", error);
-      alert(error.message || "Authentication failed. Please try again.");
+    } catch (err: any) {
+      setError(err.message || 'Authentication failed.');
     } finally {
       setLoading(false);
     }
@@ -113,217 +56,210 @@ export default function Login() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!auth.currentUser) return;
-
+    setError('');
     try {
       setLoading(true);
-      const newUser = {
-        uid: auth.currentUser.uid,
+      const result = await api.auth.register({
+        email: pendingEmail,
+        password: pendingPassword,
         role,
-        name: fullName || auth.currentUser.displayName || 'Unknown User',
-        email: auth.currentUser.email || email || '',
+        name: fullName,
         companyName: role === 'producer' || role === 'distributor' ? companyName : '',
         companyPrefix: role === 'producer' ? companyPrefix.toUpperCase() : '',
-        documentsVerified: false,
-        twoFactorEnabled: false,
-        createdAt: serverTimestamp(),
-      };
-
-      await setDoc(doc(db, 'users', auth.currentUser.uid), newUser);
-      setProfile(newUser as any);
+      });
+      login(result.token, result.user);
       navigate('/dashboard');
-    } catch (error) {
-      console.error("Registration error:", error);
-      alert("Failed to complete registration.");
+    } catch (err: any) {
+      setError(err.message || 'Registration failed.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <ShieldCheck className="h-12 w-12 text-indigo-600" />
+    <div className="min-h-screen bg-[#07070f] text-white flex overflow-hidden">
+      {/* Left panel – decorative */}
+      <div className="hidden lg:flex lg:w-1/2 relative flex-col items-center justify-center p-12 overflow-hidden">
+        {/* Gradient bg */}
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 to-[#07070f]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.2)_0%,transparent_70%)]" />
+        <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-60 h-60 bg-violet-600/10 rounded-full blur-3xl" />
+        {/* Grid */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.5) 1px,transparent 1px)', backgroundSize: '50px 50px' }} />
+
+        <div className="relative text-center max-w-md">
+          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7 }} className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-indigo-500 to-violet-600 mb-8 shadow-[0_0_60px_rgba(99,102,241,0.5)]">
+            <ShieldCheck className="h-10 w-10 text-white" />
+          </motion.div>
+          <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-4xl font-black mb-4">
+            Trust<span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Chain</span>
+          </motion.h2>
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-slate-400 text-lg leading-relaxed mb-10">
+            Blockchain-style trust across every link in the supply chain.
+          </motion.p>
+          {/* Feature bullets */}
+          {['Immutable audit trails', 'Real-time risk scoring', 'Multi-role access control', 'Consumer product verification'].map((f, i) => (
+            <motion.div key={f} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 + i * 0.1 }} className="flex items-center gap-3 text-left mb-3">
+              <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
+                <div className="w-2 h-2 rounded-full bg-emerald-400" />
+              </div>
+              <span className="text-slate-300 text-sm">{f}</span>
+            </motion.div>
+          ))}
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          TrustChain Traceability
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Blockchain-style trust across the supply chain
-        </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          {!needsRegistration ? (
-            <div>
-              <form onSubmit={handleEmailAuth} className="space-y-6 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Email address</label>
-                  <div className="mt-1">
+      {/* Right panel – form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
+        <div className="w-full max-w-md">
+          {/* Mobile logo */}
+          <Link to="/" className="flex lg:hidden items-center gap-3 mb-10 group w-fit">
+            <div className="relative">
+              <div className="absolute inset-0 bg-indigo-500 rounded-xl blur-md opacity-50" />
+              <div className="relative bg-gradient-to-br from-indigo-500 to-violet-600 p-2 rounded-xl">
+                <ShieldCheck className="h-5 w-5 text-white" />
+              </div>
+            </div>
+            <span className="text-white font-bold text-xl">Trust<span className="text-indigo-400">Chain</span></span>
+          </Link>
+
+          <AnimatePresence mode="wait">
+            {step === 'auth' ? (
+              <motion.div key="auth" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.4 }}>
+                <div className="mb-8">
+                  <h1 className="text-3xl font-black text-white mb-2">
+                    {isSignUp ? 'Create your account' : 'Welcome back'}
+                  </h1>
+                  <p className="text-slate-500">{isSignUp ? 'Join the TrustChain network today.' : 'Sign in to your TrustChain account.'}</p>
+                </div>
+
+                <form onSubmit={handleEmailAuth} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-400 mb-1.5">Email address</label>
                     <input
                       type="email"
                       required
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      onChange={e => setEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:bg-white/[0.07] transition-all text-sm"
                     />
                   </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Password</label>
-                  <div className="mt-1">
-                    <input
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
+                  <div>
+                    <label className="block text-sm font-medium text-slate-400 mb-1.5">Password</label>
+                    <div className="relative">
+                      <input
+                        type={showPass ? 'text' : 'password'}
+                        required
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:bg-white/[0.07] transition-all text-sm pr-12"
+                      />
+                      <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                        {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-                >
-                  {loading ? 'Processing...' : (isSignUp ? 'Create Account' : 'Sign In')}
-                </button>
-              </form>
 
-              <div className="text-sm text-center mb-6">
-                <button
-                  type="button"
-                  onClick={() => setIsSignUp(!isSignUp)}
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
-                >
-                  {isSignUp ? 'Already have an account? Sign in' : 'Need an account? Sign up'}
-                </button>
-              </div>
+                  {error && (
+                    <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+                      {error}
+                    </motion.div>
+                  )}
 
-              <div className="relative mb-6">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or continue with</span>
-                </div>
-              </div>
-
-              <button
-                onClick={handleGoogleLogin}
-                disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-              >
-                {loading ? 'Signing in...' : 'Google'}
-              </button>
-
-              <div className="mt-6">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">Or verify a product</span>
-                  </div>
-                </div>
-                <div className="mt-6">
                   <button
-                    onClick={() => navigate('/verify')}
-                    className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    type="submit"
+                    disabled={loading}
+                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] text-sm"
                   >
-                    Consumer Portal
+                    {loading ? <span className="animate-pulse">Processing…</span> : (isSignUp ? <><span>Continue</span><ArrowRight className="h-4 w-4" /></> : 'Sign In')}
+                  </button>
+                </form>
+
+                <p className="text-center text-slate-600 text-sm mt-6">
+                  {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+                  <button onClick={() => { setIsSignUp(!isSignUp); setError(''); }} className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
+                    {isSignUp ? 'Sign in' : 'Sign up'}
+                  </button>
+                </p>
+
+                <div className="mt-6 pt-6 border-t border-white/5 text-center">
+                  <button onClick={() => navigate('/verify')} className="text-slate-600 hover:text-slate-400 text-sm transition-colors">
+                    Verify a product without signing in →
                   </button>
                 </div>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handleRegister} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Select your role</label>
-                <div className="mt-4 grid grid-cols-2 gap-4">
-                  {[
-                    { id: 'producer', icon: Package, label: 'Producer' },
-                    { id: 'distributor', icon: Truck, label: 'Distributor' },
-                    { id: 'regulator', icon: ShieldCheck, label: 'Regulator' },
-                    { id: 'consumer', icon: UserCircle, label: 'Consumer' },
-                  ].map((r) => (
-                    <div
-                      key={r.id}
-                      onClick={() => setRole(r.id as Role)}
-                      className={`cursor-pointer border rounded-lg p-4 flex flex-col items-center justify-center ${role === r.id ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-300 hover:bg-gray-50'
-                        }`}
-                    >
-                      <r.icon className="h-6 w-6 mb-2" />
-                      <span className="text-sm font-medium">{r.label}</span>
+              </motion.div>
+            ) : (
+              <motion.div key="role" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.4 }}>
+                <button onClick={() => setStep('auth')} className="flex items-center gap-1 text-slate-500 hover:text-slate-300 text-sm mb-8 transition-colors">
+                  <ChevronLeft className="h-4 w-4" /> Back
+                </button>
+                <div className="mb-8">
+                  <h1 className="text-3xl font-black text-white mb-2">Complete your profile</h1>
+                  <p className="text-slate-500">Tell us about yourself so we can set up your workspace.</p>
+                </div>
+
+                <form onSubmit={handleRegister} className="space-y-5">
+                  {/* Role selector */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-400 mb-3">Select your role</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {roles.map(r => (
+                        <button
+                          key={r.id}
+                          type="button"
+                          onClick={() => setRole(r.id as Role)}
+                          className={`relative p-4 rounded-xl border text-left transition-all duration-200 ${role === r.id ? 'border-indigo-500 bg-indigo-500/10' : 'border-white/10 bg-white/[0.02] hover:border-white/20'}`}
+                        >
+                          {role === r.id && <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-indigo-400" />}
+                          <div className={`inline-flex p-2 rounded-lg bg-gradient-to-br ${r.gradient} mb-2`}>
+                            <r.icon className="h-4 w-4 text-white" />
+                          </div>
+                          <p className="text-white font-semibold text-sm">{r.label}</p>
+                          <p className="text-slate-500 text-xs mt-0.5">{r.desc}</p>
+                        </button>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
-                  Full Name
-                </label>
-                <div className="mt-1">
-                  <input
-                    id="fullName"
-                    type="text"
-                    required
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  />
-                </div>
-              </div>
-
-              {(role === 'producer' || role === 'distributor') && (
-                <div>
-                  <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">
-                    Company Name
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      id="companyName"
-                      type="text"
-                      required
-                      value={companyName}
-                      onChange={(e) => setCompanyName(e.target.value)}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
                   </div>
-                </div>
-              )}
 
-              {role === 'producer' && (
-                <div>
-                  <label htmlFor="companyPrefix" className="block text-sm font-medium text-gray-700">
-                    Unique Company Prefix (e.g., CCA)
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      id="companyPrefix"
-                      type="text"
-                      required
-                      maxLength={5}
-                      value={companyPrefix}
-                      onChange={(e) => setCompanyPrefix(e.target.value)}
-                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm uppercase"
-                    />
+                  <div>
+                    <label className="block text-sm font-medium text-slate-400 mb-1.5">Full Name</label>
+                    <input type="text" required value={fullName} onChange={e => setFullName(e.target.value)} placeholder="Jane Doe" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all text-sm" />
                   </div>
-                </div>
-              )}
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-              >
-                {loading ? 'Completing...' : 'Complete Registration'}
-              </button>
-            </form>
-          )}
+                  {(role === 'producer' || role === 'distributor') && (
+                    <div>
+                      <label className="block text-sm font-medium text-slate-400 mb-1.5">Company Name</label>
+                      <input type="text" required value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="Acme Corp" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all text-sm" />
+                    </div>
+                  )}
+
+                  {role === 'producer' && (
+                    <div>
+                      <label className="block text-sm font-medium text-slate-400 mb-1.5">Company Prefix <span className="text-slate-600">(max 5 chars, e.g. CCA)</span></label>
+                      <input type="text" required maxLength={5} value={companyPrefix} onChange={e => setCompanyPrefix(e.target.value.toUpperCase())} placeholder="CCA" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all text-sm uppercase" />
+                    </div>
+                  )}
+
+                  {error && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+                      {error}
+                    </motion.div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] text-sm"
+                  >
+                    {loading ? <span className="animate-pulse">Creating account…</span> : <><span>Join TrustChain</span><ArrowRight className="h-4 w-4" /></>}
+                  </button>
+                </form>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>

@@ -1,135 +1,240 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
-import { auth, signOut, db, collection, query, where, onSnapshot, updateDoc, doc } from '../firebase';
-import { LayoutDashboard, PackageSearch, User, LogOut, Bell } from 'lucide-react';
+import { api } from '../api';
+import { LayoutDashboard, PackageSearch, User, LogOut, Bell, ShieldCheck, X, BarChart2, Wallet, Unlink } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { format } from 'date-fns';
+import { connectWallet, getConnectedAccount } from '../utils/wallet';
 
 export default function Layout() {
-  const { profile, user } = useAuth();
+  const { profile, user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [walletAccount, setWalletAccount] = useState<string | null>(null);
+  const [walletLoading, setWalletLoading] = useState(false);
 
-  useEffect(() => {
+  const fetchNotifications = useCallback(async () => {
     if (!user) return;
-    const q = query(collection(db, 'notifications'), where('userId', '==', user.uid));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const notifs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-      notifs.sort((a: any, b: any) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
-      setNotifications(notifs);
-    });
-    return () => unsubscribe();
+    try { setNotifications(await api.notifications.list()); } catch { /* silent */ }
   }, [user]);
 
-  const handleLogout = async () => {
-    await signOut(auth);
-    navigate('/login');
+  useEffect(() => {
+    fetchNotifications();
+    const iv = setInterval(fetchNotifications, 15000);
+    return () => clearInterval(iv);
+  }, [fetchNotifications]);
+
+  // Wallet: check on mount + listen for account changes
+  useEffect(() => {
+    getConnectedAccount().then(setWalletAccount);
+    const provider = (Array.isArray(window.ethereum?.providers)
+      ? window.ethereum.providers.find((p: any) => p.isMetaMask)
+      : window.ethereum) ?? null;
+    if (!provider) return;
+    const handler = (accounts: string[]) => setWalletAccount(accounts[0]?.toLowerCase() || null);
+    provider.on('accountsChanged', handler);
+    return () => provider.removeListener('accountsChanged', handler);
+  }, []);
+
+  const handleConnectWallet = async () => {
+    setWalletLoading(true);
+    try {
+      const addr = await connectWallet();
+      setWalletAccount(addr);
+      await api.auth.updateProfile({ walletAddress: addr }).catch(() => {});
+    } catch (err: any) {
+      alert(err.message || 'Failed to connect wallet.');
+    } finally {
+      setWalletLoading(false);
+    }
   };
 
+  const handleDisconnectWallet = async () => {
+    setWalletAccount(null);
+    await api.auth.updateProfile({ walletAddress: '' }).catch(() => {});
+  };
+
+  const handleLogout = () => { logout(); navigate('/login'); };
+
   const markAsRead = async (id: string) => {
-    try {
-      await updateDoc(doc(db, 'notifications', id), { read: true });
-    } catch (e) {
-      console.error(e);
-    }
+    await api.notifications.markRead(id).catch(console.error);
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Verify Product', href: '/verify', icon: PackageSearch },
-    { name: 'Profile', href: '/profile', icon: User },
+  const navItems = [
+    { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { label: 'Analytics', href: '/analytics', icon: BarChart2, roles: ['regulator', 'producer'] },
+    { label: 'Verify', href: '/verify', icon: PackageSearch },
+    { label: 'Profile', href: '/profile', icon: User },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-indigo-600 border-b border-indigo-700">
+    <div className="min-h-screen bg-[#07070f] text-white">
+      {/* Top nav */}
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-[#0a0a14]/90 backdrop-blur-xl border-b border-white/[0.06]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <span className="text-white font-bold text-xl">TrustChain</span>
-              </div>
-              <div className="hidden md:block">
-                <div className="ml-10 flex items-baseline space-x-4">
-                  {navigation.map((item) => {
-                    const isActive = location.pathname === item.href;
-                    return (
-                      <Link
-                        key={item.name}
-                        to={item.href}
-                        className={`px-3 py-2 rounded-md text-sm font-medium flex items-center ${
-                          isActive
-                            ? 'bg-indigo-700 text-white'
-                            : 'text-indigo-100 hover:bg-indigo-500 hover:text-white'
-                        }`}
-                      >
-                        <item.icon className="h-4 w-4 mr-2" />
-                        {item.name}
-                      </Link>
-                    );
-                  })}
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-3 group">
+              <div className="relative">
+                <div className="absolute inset-0 bg-indigo-500 rounded-xl blur-md opacity-40 group-hover:opacity-70 transition-opacity" />
+                <div className="relative bg-gradient-to-br from-indigo-500 to-violet-600 p-1.5 rounded-xl">
+                  <ShieldCheck className="h-5 w-5 text-white" />
                 </div>
               </div>
+              <span className="text-white font-bold text-lg tracking-tight hidden sm:block">
+                Trust<span className="text-indigo-400">Chain</span>
+              </span>
+            </Link>
+
+            {/* Nav links */}
+            <div className="flex items-center gap-1">
+              {navItems.filter(item => !item.roles || (profile?.role && item.roles.includes(profile.role))).map(({ label, href, icon: Icon }) => {
+                const active = location.pathname === href;
+                return (
+                  <Link
+                    key={href}
+                    to={href}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                      active
+                        ? 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/20'
+                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span className="hidden sm:block">{label}</span>
+                  </Link>
+                );
+              })}
             </div>
-            <div className="hidden md:block">
-              <div className="ml-4 flex items-center md:ml-6 space-x-4 relative">
-                <button 
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className="p-1 rounded-full text-indigo-200 hover:text-white focus:outline-none relative"
-                >
-                  <Bell className="h-6 w-6" />
+
+            {/* Right side */}
+            <div className="flex items-center gap-2 relative">
+              {/* Notification bell */}
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+              >
+                <Bell className={`h-5 w-5 transition-colors ${unreadCount > 0 ? 'text-white' : ''}`} />
+                <AnimatePresence>
                   {unreadCount > 0 && (
-                    <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-indigo-600" />
+                    <motion.span
+                      initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+                      className="absolute top-0.5 right-0.5 w-4 h-4 bg-indigo-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center shadow-[0_0_6px_rgba(99,102,241,0.8)]"
+                    >
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </motion.span>
                   )}
-                </button>
-                
-                {showNotifications && (
-                  <div className="origin-top-right absolute right-32 mt-2 w-80 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50 top-12 max-h-96 overflow-y-auto">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <h3 className="text-sm font-medium text-gray-900">Notifications</h3>
-                    </div>
-                    {notifications.length === 0 ? (
-                      <div className="px-4 py-3 text-sm text-gray-500">No notifications</div>
-                    ) : (
-                      notifications.map(n => (
-                        <div 
-                          key={n.id} 
-                          onClick={() => markAsRead(n.id)}
-                          className={`px-4 py-3 border-b border-gray-50 cursor-pointer hover:bg-gray-50 ${!n.read ? 'bg-indigo-50' : ''}`}
-                        >
-                          <p className="text-sm font-medium text-gray-900">{n.title}</p>
-                          <p className="text-xs text-gray-500 mt-1">{n.message}</p>
-                          <p className="text-xs text-gray-400 mt-1">{n.timestamp ? format(n.timestamp.toDate(), 'PP p') : ''}</p>
-                        </div>
-                      ))
-                    )}
+                </AnimatePresence>
+              </button>
+
+              {/* User badge */}
+              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] border border-white/[0.06] rounded-xl">
+                {profile?.avatar ? (
+                  <img src={profile.avatar} alt={profile.name} className="w-6 h-6 rounded-full object-cover" />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white">
+                    {profile?.name?.[0]?.toUpperCase()}
                   </div>
                 )}
-
-                <div className="flex items-center space-x-3">
-                  <div className="text-sm text-right">
-                    <p className="text-white font-medium">{profile?.name}</p>
-                    <p className="text-indigo-200 text-xs capitalize">{profile?.role}</p>
-                  </div>
-                  <button
-                    onClick={handleLogout}
-                    className="p-1 rounded-full text-indigo-200 hover:text-white focus:outline-none"
-                  >
-                    <LogOut className="h-5 w-5" />
-                  </button>
+                <div className="text-right">
+                  <p className="text-white text-xs font-semibold leading-none">{profile?.name}</p>
+                  <p className="text-indigo-400 text-[10px] capitalize leading-none mt-0.5">{profile?.role}</p>
                 </div>
               </div>
+
+              {/* Wallet button */}
+              {walletAccount ? (
+                <button
+                  onClick={handleDisconnectWallet}
+                  title={`Connected: ${walletAccount}`}
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-red-500/10 border border-emerald-500/20 hover:border-red-500/20 text-emerald-400 hover:text-red-400 text-xs font-semibold rounded-xl transition-all group"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 group-hover:bg-red-400 transition-colors" />
+                  <span className="font-mono">{walletAccount.slice(0, 6)}…{walletAccount.slice(-4)}</span>
+                  <Unlink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              ) : (
+                <button
+                  onClick={handleConnectWallet}
+                  disabled={walletLoading}
+                  title="Connect MetaMask"
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-indigo-500/10 border border-white/10 hover:border-indigo-500/20 text-slate-400 hover:text-indigo-400 text-xs font-semibold rounded-xl transition-all disabled:opacity-50"
+                >
+                  <Wallet className="h-3.5 w-3.5" />
+                  {walletLoading ? 'Connecting…' : 'Connect'}
+                </button>
+              )}
+
+              {/* Sign out — red */}
+              <button onClick={handleLogout} className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/30 text-red-400 hover:text-red-300 text-xs font-semibold rounded-xl transition-all" title="Sign out">
+                <LogOut className="h-3.5 w-3.5" />
+                <span className="hidden sm:block">Sign out</span>
+              </button>
             </div>
           </div>
         </div>
       </nav>
 
-      <main>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      {/* Notification drawer */}
+      <AnimatePresence>
+        {showNotifications && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-30" onClick={() => setShowNotifications(false)} />
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.97 }}
+              transition={{ duration: 0.2 }}
+              className="fixed top-20 right-4 z-40 w-80 bg-[#0f0f1a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+            >
+              <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between">
+                <h3 className="text-white font-semibold text-sm">Notifications</h3>
+                <button onClick={() => setShowNotifications(false)} className="text-slate-500 hover:text-white transition-colors"><X className="h-4 w-4" /></button>
+              </div>
+              <div className="max-h-96 overflow-y-auto divide-y divide-white/[0.04]">
+                {notifications.length === 0 ? (
+                  <div className="px-4 py-8 text-center text-slate-600 text-sm">No notifications yet</div>
+                ) : (
+                  notifications.map(n => {
+                    const dotColor = n.type === 'REVIEW' ? 'bg-amber-400' : n.type === 'RISK_ALERT' ? 'bg-red-400' : n.type === 'COMPLIANCE' ? 'bg-emerald-400' : n.type === 'SETUP_DONE' ? 'bg-emerald-400' : 'bg-indigo-400';
+                    return (
+                      <div
+                        key={n.id}
+                        onClick={() => { markAsRead(n.id); if (n.link) { setShowNotifications(false); navigate(n.link); } }}
+                        className={`px-4 py-3 cursor-pointer hover:bg-white/[0.02] transition-colors ${!n.read ? 'bg-indigo-500/5' : ''}`}
+                      >
+                        <div className="flex items-start gap-2">
+                          <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${!n.read ? dotColor : 'bg-transparent'}`} />
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-xs font-semibold ${!n.read ? 'text-white' : 'text-slate-400'}`}>{n.title}</p>
+                            <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">{n.message}</p>
+                            <p className="text-slate-700 text-[10px] mt-1">{n.timestamp ? format(new Date(n.timestamp), 'PP · p') : ''}</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+              {notifications.length > 0 && unreadCount > 0 && (
+                <div className="px-4 py-2.5 border-t border-white/[0.06]">
+                  <button onClick={() => { notifications.forEach(n => { if (!n.read) markAsRead(n.id); }); }} className="text-indigo-400 hover:text-indigo-300 text-xs transition-colors">Mark all as read</button>
+                </div>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Page content */}
+      <main className="pt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Outlet />
         </div>
       </main>
