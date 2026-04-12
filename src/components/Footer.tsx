@@ -48,7 +48,7 @@ export default function Footer() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
         {/* Newsletter banner */}
-        <div className="mb-16 rounded-2xl bg-gradient-to-r from-indigo-600/20 to-violet-600/20 border border-indigo-500/20 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="mb-16 rounded-2xl bg-linear-to-r from-indigo-600/20 to-violet-600/20 border border-indigo-500/20 p-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
             <h3 className="text-xl font-bold text-white mb-1">Stay ahead of the chain</h3>
             <p className="text-slate-400 text-sm">Get supply chain insights, platform updates, and industry news delivered to your inbox.</p>
@@ -84,7 +84,7 @@ export default function Footer() {
             <Link to="/" className="flex items-center gap-3 mb-4 group w-fit">
               <div className="relative">
                 <div className="absolute inset-0 bg-indigo-500 rounded-xl blur-md opacity-40 group-hover:opacity-70 transition-opacity" />
-                <div className="relative bg-gradient-to-br from-indigo-500 to-violet-600 p-2 rounded-xl">
+                <div className="relative bg-linear-to-br from-indigo-500 to-violet-600 p-2 rounded-xl">
                   <ShieldCheck className="h-5 w-5 text-white" />
                 </div>
               </div>

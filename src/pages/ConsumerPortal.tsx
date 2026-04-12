@@ -22,13 +22,12 @@ export default function ConsumerPortal() {
         {/* Background */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.12)_0%,transparent_60%)]" />
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.3) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.3) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
-
         <div className="relative max-w-lg w-full text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-indigo-500 to-violet-600 mb-8 shadow-[0_0_60px_rgba(99,102,241,0.4)] float"
+            className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-linear-to-br from-indigo-500 to-violet-600 mb-8 shadow-[0_0_60px_rgba(99,102,241,0.4)] float"
           >
             <PackageSearch className="h-10 w-10 text-white" />
           </motion.div>
@@ -39,7 +38,7 @@ export default function ConsumerPortal() {
             transition={{ delay: 0.1 }}
             className="text-5xl font-black mb-4"
           >
-            Verify a <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Product</span>
+            Verify a <span className="bg-linear-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Product</span>
           </motion.h1>
 
           <motion.p
@@ -68,7 +67,7 @@ export default function ConsumerPortal() {
             />
             <button
               type="submit"
-              className="flex items-center gap-2 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-2xl transition-all hover:shadow-[0_0_30px_rgba(99,102,241,0.4)]"
+              className="flex items-center gap-2 px-6 py-4 bg-linear-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-2xl transition-all hover:shadow-[0_0_30px_rgba(99,102,241,0.4)]"
             >
               Verify <ArrowRight className="h-4 w-4" />
             </button>

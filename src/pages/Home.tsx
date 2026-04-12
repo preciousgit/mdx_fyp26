@@ -220,7 +220,7 @@ export default function Home() {
               whileInView="show"
               viewport={{ once: true, margin: '-60px' }}
               whileHover={{ y: -6, transition: { duration: 0.2 } }}
-              className="group relative bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 hover:border-white/10 hover:bg-white/[0.05] transition-all duration-300 cursor-default"
+              className="group relative bg-white/[0.03] border border-white/6 rounded-2xl p-6 hover:border-white/10 hover:bg-white/[0.05] transition-all duration-300 cursor-default"
             >
               <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${s.gradient} mb-5 shadow-lg`}>
                 <s.icon className="h-6 w-6 text-white" />
@@ -284,7 +284,7 @@ export default function Home() {
               whileInView="show"
               viewport={{ once: true, margin: '-60px' }}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="group bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden hover:border-white/10 cursor-pointer transition-all duration-300"
+              className="group bg-white/[0.03] border border-white/6 rounded-2xl overflow-hidden hover:border-white/10 cursor-pointer transition-all duration-300"
             >
               {/* Image placeholder */}
               <div className={`h-44 bg-gradient-to-br ${i === 0 ? 'from-indigo-900/50 to-violet-900/50' : i === 1 ? 'from-violet-900/50 to-purple-900/50' : 'from-emerald-900/50 to-teal-900/50'} flex items-center justify-center`}>
@@ -321,7 +321,7 @@ export default function Home() {
                 whileInView="show"
                 viewport={{ once: true, margin: '-60px' }}
                 whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 hover:border-white/10 transition-all duration-300"
+                className="bg-white/[0.03] border border-white/6 rounded-2xl p-6 hover:border-white/10 transition-all duration-300"
               >
                 <div className="flex gap-1 mb-4">
                   {[...Array(t.rating)].map((_, j) => (

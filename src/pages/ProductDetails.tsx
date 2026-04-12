@@ -113,13 +113,13 @@ function MapWidget({ location }: { location?: string }) {
         {modalOpen && mapLarge && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
             <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }} className="bg-[#0f0f1a] border border-white/10 rounded-2xl overflow-hidden w-full max-w-2xl" onClick={e => e.stopPropagation()}>
-              <div className="px-4 py-3 border-b border-white/[0.06] flex items-center gap-2">
+              <div className="px-4 py-3 border-b border-white/6 flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-indigo-400" />
                 <span className="text-white text-sm font-semibold truncate flex-1">{location}</span>
                 <button onClick={() => setModalOpen(false)} className="text-slate-500 hover:text-white transition-colors"><X className="h-4 w-4" /></button>
               </div>
               <iframe src={mapLarge} className="w-full h-96 block" style={{ border: 0 }} title={`Map: ${location}`} loading="lazy" />
-              <div className="px-4 py-2.5 border-t border-white/[0.06]">
+              <div className="px-4 py-2.5 border-t border-white/6">
                 <a href={`https://www.openstreetmap.org/search?query=${encodeURIComponent(location)}`} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 text-xs transition-colors">Open in OpenStreetMap ↗</a>
               </div>
             </motion.div>
@@ -143,7 +143,7 @@ function RiskForecast({ productId }: { productId: string }) {
   }, [productId]);
 
   if (loading) return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
+    <div className="bg-white/[0.03] border border-white/6 rounded-2xl p-6">
       <div className="flex items-center gap-2 mb-4">
         <Brain className="h-5 w-5 text-violet-400" />
         <h2 className="text-white font-bold text-lg">Predictive Risk Forecast</h2>
@@ -163,7 +163,7 @@ function RiskForecast({ productId }: { productId: string }) {
   const confidenceColor = data.confidence === 'high' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : data.confidence === 'medium' ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' : 'text-slate-400 bg-slate-500/10 border-slate-500/20';
 
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 space-y-5">
+    <div className="bg-white/[0.03] border border-white/6 rounded-2xl p-6 space-y-5">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-white font-bold text-lg flex items-center gap-2">
           <Brain className="h-5 w-5 text-violet-400" /> Predictive Risk Forecast
@@ -426,7 +426,7 @@ export default function ProductDetails() {
       </button>
 
       {/* Hero card */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden">
+      <div className="bg-white/[0.03] border border-white/6 rounded-2xl overflow-hidden">
         <div className="grid md:grid-cols-2 gap-0">
           <div className="relative bg-[#0a0a14] flex flex-col">
             {/* Image container */}
@@ -446,7 +446,7 @@ export default function ProductDetails() {
 
             {/* Image carousel */}
             {product.images?.length > 0 && (
-              <div className="border-t border-white/[0.06] flex gap-2 p-3 overflow-x-auto bg-white/[0.01]">
+              <div className="border-t border-white/6 flex gap-2 p-3 overflow-x-auto bg-white/[0.01]">
                 {product.images.map((img: string, i: number) => (
                   <button key={i} onClick={() => setActiveImage(i)} className={`shrink-0 w-12 h-12 rounded-lg overflow-hidden border-2 transition-all ${i === activeImage ? 'border-indigo-500' : 'border-white/10 hover:border-white/30'}`}>
                     <img src={img} className="w-full h-full object-cover" alt="" />
@@ -456,16 +456,16 @@ export default function ProductDetails() {
             )}
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-3 gap-2 px-4 py-3 border-t border-white/[0.06] bg-white/[0.01]">
+            <div className="grid grid-cols-3 gap-2 px-4 py-3 border-t border-white/6 bg-white/[0.01]">
               <div className="text-center">
                 <div className="text-base font-bold text-indigo-400">{reviews.length}</div>
                 <p className="text-[10px] text-slate-500 uppercase tracking-wider">Reviews</p>
               </div>
-              <div className="text-center border-l border-r border-white/[0.06]">
+              <div className="text-center border-l border-r border-white/6">
                 {reviews.length > 0 ? (
                   <>
                     <div className="flex items-center justify-center gap-1 mb-0.5">
-                      {[1,2,3,4,5].map(s => {
+                      {[1, 2, 3, 4, 5].map(s => {
                         const avg = reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length;
                         return <Star key={s} className={`h-3 w-3 ${s <= Math.round(avg) ? 'text-amber-400 fill-current' : 'text-slate-700'}`} />;
                       })}
@@ -533,7 +533,7 @@ export default function ProductDetails() {
               ))}
             </dl>
 
-            {product.description && <p className="text-slate-400 text-sm leading-relaxed border-t border-white/[0.06] pt-4">{product.description}</p>}
+            {product.description && <p className="text-slate-400 text-sm leading-relaxed border-t border-white/6 pt-4">{product.description}</p>}
           </div>
         </div>
       </div>
@@ -541,7 +541,7 @@ export default function ProductDetails() {
       <RiskForecast productId={product.id} />
 
       {/* Audit trail */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
+      <div className="bg-white/[0.03] border border-white/6 rounded-2xl p-6">
         <h2 className="text-white font-bold text-lg flex items-center gap-2 mb-6">
           <LinkIcon className="h-5 w-5 text-indigo-400" /> Immutable Audit Trail
           <span className="ml-auto text-slate-600 text-xs font-normal">{events.length} event{events.length !== 1 ? 's' : ''}</span>
@@ -591,7 +591,7 @@ export default function ProductDetails() {
                         </div>
                       )}
 
-                      <div className="pt-2 mt-1 border-t border-white/[0.06] font-mono text-[10px] text-slate-700 break-all">{evt.hash}</div>
+                      <div className="pt-2 mt-1 border-t border-white/6 font-mono text-[10px] text-slate-700 break-all">{evt.hash}</div>
                       <MapWidget location={evt.data?.location} />
                     </div>
                   </div>
@@ -603,7 +603,7 @@ export default function ProductDetails() {
       </div>
 
       {/* Reviews */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
+      <div className="bg-white/[0.03] border border-white/6 rounded-2xl p-6">
         <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
           <h2 className="text-white font-bold text-lg flex items-center gap-2">
             <MessageSquare className="h-5 w-5 text-indigo-400" /> Reviews & Discussion
@@ -611,7 +611,7 @@ export default function ProductDetails() {
           {reviews.length > 0 ? (
             <div className="flex items-center gap-3">
               <div className="flex gap-0.5">
-                {[1,2,3,4,5].map(s => {
+                {[1, 2, 3, 4, 5].map(s => {
                   const avg = reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length;
                   return <Star key={s} className={`h-4 w-4 ${s <= Math.round(avg) ? 'text-amber-400 fill-current' : 'text-slate-700'}`} />;
                 })}
@@ -625,7 +625,7 @@ export default function ProductDetails() {
         </div>
 
         {user && (
-          <form onSubmit={handleSubmitReview} className="mb-8 p-5 bg-white/[0.02] border border-white/[0.06] rounded-2xl space-y-4">
+          <form onSubmit={handleSubmitReview} className="mb-8 p-5 bg-white/[0.02] border border-white/6 rounded-2xl space-y-4">
             <h3 className="text-white font-semibold text-sm">Leave a Review</h3>
             <div className="flex items-center gap-2">
               <span className="text-slate-500 text-sm">Rating:</span>

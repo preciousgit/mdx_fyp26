@@ -49,7 +49,7 @@ export default function Contact() {
             <MessageSquare className="h-4 w-4" /> Get in touch
           </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-5xl sm:text-6xl font-black mb-4">
-            We'd Love to <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Hear from You</span>
+            We'd Love to <span className="bg-linear-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Hear from You</span>
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-slate-400 text-lg">
             Whether you have a question, feedback, or want to explore an enterprise plan — our team responds within 24 hours.
@@ -70,9 +70,9 @@ export default function Contact() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.1 + 0.3 }}
-                className="flex items-center gap-4 p-5 bg-white/[0.03] border border-white/[0.06] rounded-2xl hover:border-indigo-500/30 transition-all duration-300 group"
+                className="flex items-center gap-4 p-5 bg-white/3 border border-white/6 rounded-2xl hover:border-indigo-500/30 transition-all duration-300 group"
               >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600/20 to-violet-600/20 border border-indigo-500/20 flex items-center justify-center shrink-0 group-hover:border-indigo-500/40 transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-linear-to-br from-indigo-600/20 to-violet-600/20 border border-indigo-500/20 flex items-center justify-center shrink-0 group-hover:border-indigo-500/40 transition-colors">
                   <Icon className="h-5 w-5 text-indigo-400" />
                 </div>
                 <div>
@@ -87,7 +87,7 @@ export default function Contact() {
               <h3 className="text-white font-bold text-lg mb-4">Common Questions</h3>
               <div className="space-y-4">
                 {faqs.map(({ q, a }) => (
-                  <div key={q} className="p-5 bg-white/[0.02] border border-white/[0.05] rounded-xl">
+                  <div key={q} className="p-5 bg-white/2 border border-white/5 rounded-xl">
                     <p className="text-slate-200 font-medium text-sm mb-2">{q}</p>
                     <p className="text-slate-500 text-sm leading-relaxed">{a}</p>
                   </div>
@@ -103,7 +103,7 @@ export default function Contact() {
             transition={{ delay: 0.3 }}
             className="lg:col-span-3"
           >
-            <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-8">
+            <div className="bg-white/[0.03] border border-white/6 rounded-2xl p-8">
               {sent ? (
                 <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center py-16 text-center">
                   <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mb-4">

@@ -272,7 +272,7 @@ function ProducerDashboard() {
 
       <div className="grid grid-cols-3 gap-4">
         {[{ label: 'Total Products', val: products.length, color: 'text-white' }, { label: 'High Risk', val: highRisk, color: 'text-red-400' }, { label: 'Compliant', val: products.length - highRisk, color: 'text-emerald-400' }].map(s => (
-          <div key={s.label} className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5">
+          <div key={s.label} className="bg-white/[0.03] border border-white/6 rounded-2xl p-5">
             <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">{s.label}</p>
             <p className={`text-3xl font-black ${s.color}`}>{s.val}</p>
           </div>
@@ -407,8 +407,8 @@ function ProducerDashboard() {
         )}
       </AnimatePresence>
 
-      <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/[0.06]">
+      <div className="bg-white/[0.02] border border-white/6 rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-white/6">
           <h3 className="text-white font-semibold">Your Products</h3>
         </div>
         {products.length === 0 ? (
@@ -558,7 +558,7 @@ function DistributorDashboard() {
 
       <WalletGuard walletAddress={profile?.walletAddress} />
 
-      <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-5">
+      <div className="bg-white/[0.02] border border-white/6 rounded-2xl p-5">
         <h3 className="text-white font-semibold mb-3 text-sm">Look Up a Product</h3>
         <div className="flex gap-3">
           <input type="text" placeholder="Enter Product ID (e.g., CCA-12345)" value={searchId} onChange={e => setSearchId(e.target.value)} className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all text-sm" />
@@ -566,8 +566,8 @@ function DistributorDashboard() {
         </div>
       </div>
 
-      <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/[0.06]">
+      <div className="bg-white/[0.02] border border-white/6 rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-white/6">
           <h3 className="text-white font-semibold">Active Shipments</h3>
         </div>
         {products.length === 0 ? (
@@ -750,8 +750,8 @@ function RegulatorDashboard() {
       <WalletGuard walletAddress={profile?.walletAddress} />
 
       {/* Flagged products */}
-      <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/[0.06] flex items-center gap-2">
+      <div className="bg-white/[0.02] border border-white/6 rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-white/6 flex items-center gap-2">
           <AlertTriangle className="h-5 w-5 text-red-400" />
           <h3 className="text-white font-semibold">Flagged Products</h3>
           {flagged.length > 0 && <span className="ml-auto px-2.5 py-0.5 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold rounded-full">{flagged.length}</span>}
@@ -789,8 +789,8 @@ function RegulatorDashboard() {
       </div>
 
       {/* ── Recall Simulation ── */}
-      <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/[0.06] flex items-center gap-2">
+      <div className="bg-white/[0.02] border border-white/6 rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-white/6 flex items-center gap-2">
           <Zap className="h-5 w-5 text-amber-400" />
           <h3 className="text-white font-semibold">Recall Simulation</h3>
           <span className="ml-auto text-slate-600 text-xs">Trace affected products across the full chain</span>

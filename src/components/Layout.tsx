@@ -76,14 +76,14 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-[#07070f] text-white">
       {/* Top nav */}
-      <nav className="fixed top-0 left-0 right-0 z-40 bg-[#0a0a14]/90 backdrop-blur-xl border-b border-white/[0.06]">
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-[#0a0a14]/90 backdrop-blur-xl border-b border-white/6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 group">
               <div className="relative">
                 <div className="absolute inset-0 bg-indigo-500 rounded-xl blur-md opacity-40 group-hover:opacity-70 transition-opacity" />
-                <div className="relative bg-gradient-to-br from-indigo-500 to-violet-600 p-1.5 rounded-xl">
+                <div className="relative bg-linear-to-br from-indigo-500 to-violet-600 p-1.5 rounded-xl">
                   <ShieldCheck className="h-5 w-5 text-white" />
                 </div>
               </div>
@@ -134,11 +134,11 @@ export default function Layout() {
               </button>
 
               {/* User badge */}
-              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] border border-white/[0.06] rounded-xl">
+              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/3 border border-white/6 rounded-xl">
                 {profile?.avatar ? (
                   <img src={profile.avatar} alt={profile.name} className="w-6 h-6 rounded-full object-cover" />
                 ) : (
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white">
+                  <div className="w-6 h-6 rounded-full bg-linear-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white">
                     {profile?.name?.[0]?.toUpperCase()}
                   </div>
                 )}
@@ -193,11 +193,11 @@ export default function Layout() {
               transition={{ duration: 0.2 }}
               className="fixed top-20 right-4 z-40 w-80 bg-[#0f0f1a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
             >
-              <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between">
+              <div className="px-4 py-3 border-b border-white/6 flex items-center justify-between">
                 <h3 className="text-white font-semibold text-sm">Notifications</h3>
                 <button onClick={() => setShowNotifications(false)} className="text-slate-500 hover:text-white transition-colors"><X className="h-4 w-4" /></button>
               </div>
-              <div className="max-h-96 overflow-y-auto divide-y divide-white/[0.04]">
+              <div className="max-h-96 overflow-y-auto divide-y divide-white/4">
                 {notifications.length === 0 ? (
                   <div className="px-4 py-8 text-center text-slate-600 text-sm">No notifications yet</div>
                 ) : (
@@ -207,7 +207,7 @@ export default function Layout() {
                       <div
                         key={n.id}
                         onClick={() => { markAsRead(n.id); if (n.link) { setShowNotifications(false); navigate(n.link); } }}
-                        className={`px-4 py-3 cursor-pointer hover:bg-white/[0.02] transition-colors ${!n.read ? 'bg-indigo-500/5' : ''}`}
+                        className={`px-4 py-3 cursor-pointer hover:bg-white/2 transition-colors ${!n.read ? 'bg-indigo-500/5' : ''}`}
                       >
                         <div className="flex items-start gap-2">
                           <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${!n.read ? dotColor : 'bg-transparent'}`} />
@@ -223,7 +223,7 @@ export default function Layout() {
                 )}
               </div>
               {notifications.length > 0 && unreadCount > 0 && (
-                <div className="px-4 py-2.5 border-t border-white/[0.06]">
+                <div className="px-4 py-2.5 border-t border-white/6">
                   <button onClick={() => { notifications.forEach(n => { if (!n.read) markAsRead(n.id); }); }} className="text-indigo-400 hover:text-indigo-300 text-xs transition-colors">Mark all as read</button>
                 </div>
               )}

@@ -48,7 +48,7 @@ function StatCard({ label, value, sub, color = 'text-white', icon: Icon }: {
   color?: string; icon: React.ElementType;
 }) {
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5">
+    <div className="bg-white/3 border border-white/6 rounded-2xl p-5">
       <div className="flex items-start justify-between mb-3">
         <p className="text-slate-500 text-xs uppercase tracking-wider">{label}</p>
         <Icon className="h-4 w-4 text-slate-600" />
@@ -112,7 +112,10 @@ export default function Analytics() {
           </h1>
           <p className="text-slate-500 text-sm mt-1">Portfolio-level Business Intelligence · live data</p>
         </div>
-        <button onClick={() => setLoading(true) || api.analytics.portfolio().then(setData).catch(console.error).finally(() => setLoading(false))}
+        <button onClick={() => {
+          setLoading(true);
+          api.analytics.portfolio().then(setData).catch(console.error).finally(() => setLoading(false));
+        }}
           className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-xs font-semibold rounded-xl transition-all">
           Refresh
         </button>
@@ -136,7 +139,7 @@ export default function Analytics() {
       {/* Charts row */}
       <div className="grid md:grid-cols-2 gap-6">
         {/* Event activity */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
+        <div className="bg-white/3 border border-white/6 rounded-2xl p-6">
           <h3 className="text-white font-bold text-sm flex items-center gap-2 mb-4">
             <Activity className="h-4 w-4 text-indigo-400" /> Event Activity (Last 7 Days)
           </h3>
@@ -149,7 +152,7 @@ export default function Analytics() {
         </div>
 
         {/* Category risk */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
+        <div className="bg-white/3 border border-white/6 rounded-2xl p-6">
           <h3 className="text-white font-bold text-sm flex items-center gap-2 mb-4">
             <TrendingUp className="h-4 w-4 text-red-400" /> Avg Risk by Category
           </h3>
@@ -166,7 +169,7 @@ export default function Analytics() {
       </div>
 
       {/* Status distribution */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
+      <div className="bg-white/3 border border-white/6 rounded-2xl p-6">
         <h3 className="text-white font-bold text-sm flex items-center gap-2 mb-5">
           <Package className="h-4 w-4 text-indigo-400" /> Product Status Distribution
         </h3>
@@ -185,7 +188,7 @@ export default function Analytics() {
                   <span className="text-slate-400">{row.label}</span>
                   <span className={`font-semibold ${row.text}`}>{row.val} <span className="text-slate-600 font-normal">({pct.toFixed(0)}%)</span></span>
                 </div>
-                <div className="h-2 bg-white/[0.05] rounded-full overflow-hidden">
+                <div className="h-2 bg-white/5 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${pct}%` }}
@@ -201,15 +204,15 @@ export default function Analytics() {
 
       {/* Top risk products */}
       {data.topRisk?.length > 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-white/[0.06] flex items-center gap-2">
+        <div className="bg-white/3 border border-white/6 rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-white/6 flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-red-400" />
             <h3 className="text-white font-bold text-sm">Top 5 Highest Risk Products</h3>
           </div>
-          <ul className="divide-y divide-white/[0.04]">
+          <ul className="divide-y divide-white/4">
             {data.topRisk.map((p: any, i: number) => (
               <motion.li key={p.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}>
-                <button className="w-full px-6 py-4 flex items-center justify-between gap-4 hover:bg-white/[0.02] transition-colors group" onClick={() => navigate(`/product/${p.id}`)}>
+                <button className="w-full px-6 py-4 flex items-center justify-between gap-4 hover:bg-white/2 transition-colors group" onClick={() => navigate(`/product/${p.id}`)}>
                   <div className="flex items-center gap-3 text-left">
                     <span className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xs text-slate-500 font-bold shrink-0">{i + 1}</span>
                     <div>
@@ -233,22 +236,22 @@ export default function Analytics() {
 
       {/* Category detail table */}
       {data.categories?.length > 0 && (
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-white/[0.06]">
+        <div className="bg-white/3 border border-white/6 rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-white/6">
             <h3 className="text-white font-bold text-sm">Category Risk Breakdown</h3>
           </div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/[0.04]">
+              <tr className="border-b border-white/4">
                 <th className="text-left px-6 py-3 text-slate-500 text-xs uppercase tracking-wider font-medium">Category</th>
                 <th className="text-right px-6 py-3 text-slate-500 text-xs uppercase tracking-wider font-medium">Products</th>
                 <th className="text-right px-6 py-3 text-slate-500 text-xs uppercase tracking-wider font-medium">Avg Risk</th>
                 <th className="text-right px-6 py-3 text-slate-500 text-xs uppercase tracking-wider font-medium hidden sm:table-cell">Risk Level</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04]">
+            <tbody className="divide-y divide-white/4">
               {data.categories.map((c: any, i: number) => (
-                <tr key={i} className="hover:bg-white/[0.02] transition-colors">
+                <tr key={i} className="hover:bg-white/2 transition-colors">
                   <td className="px-6 py-3 text-white capitalize font-medium">{c.name}</td>
                   <td className="px-6 py-3 text-slate-400 text-right">{c.count}</td>
                   <td className={`px-6 py-3 text-right font-bold ${c.avgRisk > 50 ? 'text-red-400' : c.avgRisk > 25 ? 'text-amber-400' : 'text-emerald-400'}`}>{c.avgRisk}</td>

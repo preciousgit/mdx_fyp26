@@ -111,7 +111,7 @@ export default function Profile() {
     ...(profile.role === 'producer' || profile.role === 'distributor'
       ? [{ label: 'Company Name', key: 'companyName', editable: true, value: formData.companyName, onChange: (v: string) => setFormData({ ...formData, companyName: v }), placeholder: '' }]
       : []),
-    ...(profile.companyPrefix ? [{ label: 'Company Prefix', key: 'companyPrefix', editable: false, value: profile.companyPrefix, onChange: () => {} }] : []),
+    ...(profile.companyPrefix ? [{ label: 'Company Prefix', key: 'companyPrefix', editable: false, value: profile.companyPrefix, onChange: () => { } }] : []),
     {
       label: 'Address / Location',
       key: 'address',
@@ -131,7 +131,7 @@ export default function Profile() {
   return (
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto space-y-5">
       {/* Profile header card */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden">
+      <div className="bg-white/[0.03] border border-white/6 rounded-2xl overflow-hidden">
         <div className={`h-24 bg-gradient-to-r ${roleColors[profile.role] || 'from-indigo-500 to-violet-500'} opacity-20`} />
         <div className="px-6 pb-6 -mt-10">
           {/* Avatar with upload overlay */}
@@ -186,8 +186,8 @@ export default function Profile() {
       )}
 
       {/* Info fields */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/[0.06] flex items-center gap-2">
+      <div className="bg-white/[0.03] border border-white/6 rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-white/6 flex items-center gap-2">
           <User className="h-4 w-4 text-indigo-400" />
           <h2 className="text-white font-semibold text-sm">Profile Information</h2>
         </div>
@@ -220,8 +220,8 @@ export default function Profile() {
       </div>
 
       {/* Crypto Wallet section */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/[0.06] flex items-center gap-2">
+      <div className="bg-white/[0.03] border border-white/6 rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-white/6 flex items-center gap-2">
           <Wallet className="h-4 w-4 text-indigo-400" />
           <h2 className="text-white font-semibold text-sm">Crypto Wallet</h2>
           <span className="ml-auto text-slate-600 text-xs">Sepolia Testnet · {FEE_ETH} ETH per action</span>
@@ -289,8 +289,8 @@ export default function Profile() {
       </div>
 
       {/* Security section */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/[0.06] flex items-center gap-2">
+      <div className="bg-white/[0.03] border border-white/6 rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-white/6 flex items-center gap-2">
           <Shield className="h-4 w-4 text-indigo-400" />
           <h2 className="text-white font-semibold text-sm">Security & Verification</h2>
         </div>
