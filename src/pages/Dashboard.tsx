@@ -263,7 +263,7 @@ function ProducerDashboard() {
           <h1 className="text-2xl font-black text-white">Producer Dashboard</h1>
           <p className="text-slate-500 text-sm mt-1">Manage and track your registered products</p>
         </div>
-        <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-xl transition-all hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] text-sm">
+        <button onClick={() => setShowAdd(true)} className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-xl transition-all hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] text-sm">
           <Plus className="h-4 w-4" /> Register Product
         </button>
       </div>
@@ -283,7 +283,7 @@ function ProducerDashboard() {
       <AnimatePresence>
         {showAdd && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} className="bg-[#0f0f1a] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} className="bg-[#0D1626] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
               <div className="p-6 border-b border-white/10 flex items-center justify-between">
                 <div>
                   <h2 className="text-white font-bold text-xl">Register New Product</h2>
@@ -312,7 +312,7 @@ function ProducerDashboard() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-400 mb-1.5">Packaging Type</label>
-                    <select value={newProduct.packagingType} onChange={e => setNewProduct({ ...newProduct, packagingType: e.target.value })} className="w-full px-4 py-3 bg-[#0a0a14] border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500 transition-all text-sm">
+                    <select value={newProduct.packagingType} onChange={e => setNewProduct({ ...newProduct, packagingType: e.target.value })} className="w-full px-4 py-3 bg-[#08111E] border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500 transition-all text-sm">
                       <option value="item">Singular Item</option>
                       <option value="box">Box / Group</option>
                       <option value="pallet">Pallet</option>
@@ -605,7 +605,7 @@ function DistributorDashboard() {
       <AnimatePresence>
         {conditionModal && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} className="bg-[#0f0f1a] border border-white/10 rounded-2xl w-full max-w-lg">
+            <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} className="bg-[#0D1626] border border-white/10 rounded-2xl w-full max-w-lg">
               <div className="p-6 border-b border-white/10 flex items-center justify-between">
                 <div>
                   <h2 className="text-white font-bold text-lg">Log Product Condition</h2>
@@ -628,7 +628,7 @@ function DistributorDashboard() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-400 mb-1.5">Condition Grade</label>
-                    <select value={conditionForm.conditionGrade} onChange={e => setConditionForm(f => ({ ...f, conditionGrade: e.target.value }))} className="w-full px-4 py-3 bg-[#0a0a14] border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500 transition-all text-sm">
+                    <select value={conditionForm.conditionGrade} onChange={e => setConditionForm(f => ({ ...f, conditionGrade: e.target.value }))} className="w-full px-4 py-3 bg-[#08111E] border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500 transition-all text-sm">
                       <option value="excellent">Excellent</option>
                       <option value="good">Good</option>
                       <option value="fair">Fair</option>
@@ -637,7 +637,7 @@ function DistributorDashboard() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-400 mb-1.5">Visible Damage?</label>
-                    <select value={conditionForm.visibleDamage} onChange={e => setConditionForm(f => ({ ...f, visibleDamage: e.target.value }))} className="w-full px-4 py-3 bg-[#0a0a14] border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500 transition-all text-sm">
+                    <select value={conditionForm.visibleDamage} onChange={e => setConditionForm(f => ({ ...f, visibleDamage: e.target.value }))} className="w-full px-4 py-3 bg-[#08111E] border border-white/10 rounded-xl text-white focus:outline-none focus:border-indigo-500 transition-all text-sm">
                       <option value="no">No</option>
                       <option value="yes">Yes</option>
                     </select>
@@ -919,7 +919,7 @@ function ConsumerDashboard() {
         <h1 className="text-3xl font-black text-white mb-3">Welcome to TrustChain</h1>
         <p className="text-slate-400 max-w-md">Verify the authenticity and full history of any product using our immutable blockchain-style ledger.</p>
       </div>
-      <button onClick={() => navigate('/verify')} className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-2xl text-lg transition-all hover:shadow-[0_0_30px_rgba(99,102,241,0.4)]">
+      <button onClick={() => navigate('/verify')} className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-2xl text-lg transition-all hover:shadow-[0_0_30px_rgba(59,130,246,0.4)]">
         <Package className="h-5 w-5" /> Verify a Product Now
       </button>
     </div>

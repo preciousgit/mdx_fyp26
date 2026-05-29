@@ -30,7 +30,7 @@ export default function Navbar() {
       transition={{ duration: 0.6, ease: 'easeOut' }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? 'bg-[#07070f]/90 backdrop-blur-xl border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
+          ? 'bg-[#060B14]/90 backdrop-blur-xl border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.5)]'
           : 'bg-transparent'
       }`}
     >
@@ -71,7 +71,7 @@ export default function Navbar() {
             {user ? (
               <button
                 onClick={() => navigate('/dashboard')}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-xl transition-all duration-200 hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]"
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-xl transition-all duration-200 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)]"
               >
                 Dashboard <ChevronRight className="h-4 w-4" />
               </button>
@@ -85,7 +85,7 @@ export default function Navbar() {
                 </button>
                 <button
                   onClick={() => navigate('/login')}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-sm font-semibold rounded-xl transition-all duration-200 hover:shadow-[0_0_20px_rgba(99,102,241,0.4)]"
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-sm font-semibold rounded-xl transition-all duration-200 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]"
                 >
                   Get Started <ChevronRight className="h-4 w-4" />
                 </button>
@@ -110,7 +110,7 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-[#0f0f1a]/95 backdrop-blur-xl border-t border-white/5"
+            className="md:hidden bg-[#0D1626]/95 backdrop-blur-xl border-t border-white/5"
           >
             <div className="px-4 py-6 space-y-4">
               {links.map(link => (

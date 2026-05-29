@@ -95,7 +95,7 @@ function MapWidget({ location }: { location?: string }) {
                 ) : mapSrc ? (
                   <>
                     <iframe src={mapSrc} className="w-full h-36 block" style={{ border: 0, pointerEvents: 'none' }} title={`Map: ${location}`} loading="lazy" />
-                    <button onClick={() => setModalOpen(true)} className="absolute top-2 right-2 p-1.5 bg-[#0a0a14]/80 hover:bg-[#0a0a14] border border-white/10 rounded-lg text-slate-400 hover:text-white transition-all" title="Expand map"><Maximize2 className="h-3.5 w-3.5" /></button>
+                    <button onClick={() => setModalOpen(true)} className="absolute top-2 right-2 p-1.5 bg-[#08111E]/80 hover:bg-[#08111E] border border-white/10 rounded-lg text-slate-400 hover:text-white transition-all" title="Expand map"><Maximize2 className="h-3.5 w-3.5" /></button>
                   </>
                 ) : (
                   <div className="h-24 bg-white/[0.02] flex flex-col items-center justify-center gap-2">
@@ -112,7 +112,7 @@ function MapWidget({ location }: { location?: string }) {
       <AnimatePresence>
         {modalOpen && mapLarge && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setModalOpen(false)}>
-            <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }} className="bg-[#0f0f1a] border border-white/10 rounded-2xl overflow-hidden w-full max-w-2xl" onClick={e => e.stopPropagation()}>
+            <motion.div initial={{ scale: 0.95, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 16 }} className="bg-[#0D1626] border border-white/10 rounded-2xl overflow-hidden w-full max-w-2xl" onClick={e => e.stopPropagation()}>
               <div className="px-4 py-3 border-b border-white/6 flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-indigo-400" />
                 <span className="text-white text-sm font-semibold truncate flex-1">{location}</span>
@@ -243,7 +243,7 @@ function RiskForecast({ productId }: { productId: string }) {
                   </div>
                   <span className="text-[9px] text-slate-600 group-hover:text-slate-400 transition-colors">{i + 1}</span>
                   {/* Tooltip */}
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#0f0f1a] border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#0D1626] border border-white/10 rounded-lg px-2 py-1 text-[10px] text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                     {pt.temperature !== null ? `${pt.temperature}°C` : '—'}
                     {pt.anomalies?.length > 0 && ' ⚠'}
                   </div>
@@ -428,7 +428,7 @@ export default function ProductDetails() {
       {/* Hero card */}
       <div className="bg-white/[0.03] border border-white/6 rounded-2xl overflow-hidden">
         <div className="grid md:grid-cols-2 gap-0">
-          <div className="relative bg-[#0a0a14] flex flex-col">
+          <div className="relative bg-[#08111E] flex flex-col">
             {/* Image container */}
             <div className="relative flex-1 min-h-[320px] flex items-center justify-center overflow-hidden">
               {product.images?.length > 0 ? (

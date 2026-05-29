@@ -6,7 +6,7 @@ import { useAuth, Role } from '../AuthContext';
 import { ShieldCheck, Package, Truck, UserCircle, ArrowRight, Eye, EyeOff, ChevronLeft } from 'lucide-react';
 
 const roles = [
-  { id: 'producer', icon: Package, label: 'Producer', desc: 'Register & track your products', gradient: 'from-indigo-500 to-blue-500' },
+  { id: 'producer', icon: Package, label: 'Producer', desc: 'Register & track your products', gradient: 'from-blue-600 to-cyan-400' },
   { id: 'distributor', icon: Truck, label: 'Distributor', desc: 'Log handoffs & conditions', gradient: 'from-violet-500 to-purple-500' },
   { id: 'regulator', icon: ShieldCheck, label: 'Regulator', desc: 'Review & approve flagged items', gradient: 'from-emerald-500 to-teal-500' },
   { id: 'consumer', icon: UserCircle, label: 'Consumer', desc: 'Verify products & leave reviews', gradient: 'from-amber-500 to-orange-500' },
@@ -77,19 +77,19 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#07070f] text-white flex overflow-hidden">
+    <div className="min-h-screen bg-[#060B14] text-white flex overflow-hidden">
       {/* Left panel – decorative */}
       <div className="hidden lg:flex lg:w-1/2 relative flex-col items-center justify-center p-12 overflow-hidden">
         {/* Gradient bg */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 to-[#07070f]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.2)_0%,transparent_70%)]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 to-[#060B14]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.2)_0%,transparent_70%)]" />
         <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-60 h-60 bg-violet-600/10 rounded-full blur-3xl" />
         {/* Grid */}
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.5) 1px,transparent 1px)', backgroundSize: '50px 50px' }} />
 
         <div className="relative text-center max-w-md">
-          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7 }} className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-indigo-500 to-violet-600 mb-8 shadow-[0_0_60px_rgba(99,102,241,0.5)]">
+          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7 }} className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-indigo-500 to-violet-600 mb-8 shadow-[0_0_60px_rgba(59,130,246,0.5)]">
             <ShieldCheck className="h-10 w-10 text-white" />
           </motion.div>
           <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-4xl font-black mb-4">
@@ -172,7 +172,7 @@ export default function Login() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] text-sm"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] text-sm"
                   >
                     {loading ? <span className="animate-pulse">Processing…</span> : (isSignUp ? <><span>Continue</span><ArrowRight className="h-4 w-4" /></> : 'Sign In')}
                   </button>
@@ -252,7 +252,7 @@ export default function Login() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] text-sm"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] text-sm"
                   >
                     {loading ? <span className="animate-pulse">Creating account…</span> : <><span>Join TrustChain</span><ArrowRight className="h-4 w-4" /></>}
                   </button>

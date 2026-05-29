@@ -41,7 +41,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative bg-[#07070f] border-t border-white/5 overflow-hidden">
+    <footer className="relative bg-[#060B14] border-t border-white/5 overflow-hidden">
       {/* Glow orbs */}
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -69,7 +69,7 @@ export default function Footer() {
               />
               <button
                 type="submit"
-                className="px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-all duration-200 hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] flex items-center gap-2 whitespace-nowrap"
+                className="px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-all duration-200 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center gap-2 whitespace-nowrap"
               >
                 Subscribe
               </button>

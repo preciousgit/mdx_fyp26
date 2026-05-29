@@ -32,7 +32,7 @@ function BarChart({ data, maxVal, colorFn }: {
             </div>
             <span className="text-[9px] text-slate-600 group-hover:text-slate-400 transition-colors truncate w-full text-center">{d.label}</span>
             {/* Hover tooltip */}
-            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#0f0f1a] border border-white/10 rounded px-2 py-0.5 text-[10px] text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#0D1626] border border-white/10 rounded px-2 py-0.5 text-[10px] text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
               {d.value}
             </div>
           </div>

@@ -16,7 +16,7 @@ const DRIFT_SPEED = 0.22;       // base drift per frame
 // Electric blue palette matching the image
 const LINE_COLOR   = [96, 165, 250];  // blue-400
 const NODE_COLOR   = [147, 197, 253]; // blue-300
-const GLOW_COLOR   = [99, 102, 241];  // indigo-500
+const GLOW_COLOR   = [59, 130, 246];  // blue-500
 
 function rgba(rgb: number[], a: number) {
   return `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a.toFixed(3)})`;

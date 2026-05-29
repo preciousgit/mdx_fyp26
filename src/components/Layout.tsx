@@ -74,9 +74,9 @@ export default function Layout() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#07070f] text-white">
+    <div className="min-h-screen bg-[#060B14] text-white">
       {/* Top nav */}
-      <nav className="fixed top-0 left-0 right-0 z-40 bg-[#0a0a14]/90 backdrop-blur-xl border-b border-white/6">
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-[#08111E]/90 backdrop-blur-xl border-b border-white/6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -125,7 +125,7 @@ export default function Layout() {
                   {unreadCount > 0 && (
                     <motion.span
                       initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
-                      className="absolute top-0.5 right-0.5 w-4 h-4 bg-indigo-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center shadow-[0_0_6px_rgba(99,102,241,0.8)]"
+                      className="absolute top-0.5 right-0.5 w-4 h-4 bg-indigo-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center shadow-[0_0_6px_rgba(59,130,246,0.8)]"
                     >
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </motion.span>
@@ -191,7 +191,7 @@ export default function Layout() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.97 }}
               transition={{ duration: 0.2 }}
-              className="fixed top-20 right-4 z-40 w-80 bg-[#0f0f1a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+              className="fixed top-20 right-4 z-40 w-80 bg-[#0D1626] border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
             >
               <div className="px-4 py-3 border-b border-white/6 flex items-center justify-between">
                 <h3 className="text-white font-semibold text-sm">Notifications</h3>

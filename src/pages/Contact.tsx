@@ -38,12 +38,12 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-[#07070f] text-white">
+    <div className="min-h-screen bg-[#060B14] text-white">
       <Navbar />
 
       {/* Hero */}
       <section className="relative pt-36 pb-20 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.12)_0%,transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.12)_0%,transparent_60%)]" />
         <div className="relative max-w-3xl mx-auto text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm font-medium mb-6">
             <MessageSquare className="h-4 w-4" /> Get in touch
@@ -139,7 +139,7 @@ export default function Contact() {
                       <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">{error}</div>
                     )}
 
-                    <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.4)]">
+                    <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)]">
                       {loading ? <span className="animate-pulse">Sending…</span> : <><Send className="h-4 w-4" /> Send Message</>}
                     </button>
                   </form>

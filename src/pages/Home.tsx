@@ -33,7 +33,7 @@ function Section({ children, className = '' }: { children: React.ReactNode; clas
 const sponsors = ['Maersk', 'DHL', 'Unilever', 'Nestlé', 'Walmart', 'Amazon', 'FedEx', 'BASF', 'Pfizer', 'Toyota', 'Samsung', 'Siemens'];
 
 const services = [
-  { icon: Package, title: 'Product Registration', desc: 'Register products with unique blockchain IDs, media, and full metadata. Every item gets an immutable digital passport.', gradient: 'from-indigo-500 to-blue-500' },
+  { icon: Package, title: 'Product Registration', desc: 'Register products with unique blockchain IDs, media, and full metadata. Every item gets an immutable digital passport.', gradient: 'from-blue-600 to-cyan-400' },
   { icon: Truck, title: 'Supply Chain Tracking', desc: 'Real-time handoff logging with environmental conditions. Every transfer is cryptographically sealed on the ledger.', gradient: 'from-violet-500 to-purple-600' },
   { icon: ShieldCheck, title: 'Regulatory Compliance', desc: 'Automated risk scoring and instant regulatory review workflows. Stay ahead of compliance without the paperwork.', gradient: 'from-emerald-500 to-teal-500' },
   { icon: BarChart3, title: 'Analytics & Insights', desc: 'Deep supply chain analytics with risk heatmaps, audit trails, and consumer sentiment reports in real time.', gradient: 'from-orange-500 to-amber-500' },
@@ -70,7 +70,7 @@ export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#07070f] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#060B14] text-white overflow-x-hidden">
       <Navbar />
 
       {/* ── Hero ── */}
@@ -80,7 +80,7 @@ export default function Home() {
           className="absolute inset-0 z-0"
           style={{
             // Fade: fully visible at bottom-left (where the network is dense),
-            // dissolves toward the top-center and right edge, merging with #07070f
+            // dissolves toward the top-center and right edge, merging with #060B14
             WebkitMaskImage: [
               'radial-gradient(ellipse 80% 55% at 25% 80%, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 45%, transparent 70%)',
               'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 45%, transparent 75%)',
@@ -97,7 +97,7 @@ export default function Home() {
         {/* ── Original ambience (kept on top of plexus for depth layering) ── */}
         <div className="absolute inset-0 z-[1] pointer-events-none">
           {/* Top glow pushes through the plexus mesh giving volumetric feel */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.12)_0%,transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.12)_0%,transparent_60%)]" />
           {/* Subtle colour blobs */}
           <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-indigo-600/5 rounded-full blur-3xl" />
           <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-violet-600/5 rounded-full blur-3xl" />
@@ -107,7 +107,7 @@ export default function Home() {
             style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.3) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.3) 1px,transparent 1px)', backgroundSize: '60px 60px' }}
           />
           {/* Bottom vignette — hard seal against the next section */}
-          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#07070f] to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#060B14] to-transparent" />
         </div>
 
         <div className="relative z-2 max-w-6xl mx-auto pt-32 pb-24 text-center">
@@ -155,7 +155,7 @@ export default function Home() {
           >
             <button
               onClick={() => navigate('/login')}
-              className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-2xl text-lg transition-all duration-300 hover:shadow-[0_0_40px_rgba(99,102,241,0.5)] hover:-translate-y-0.5"
+              className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-2xl text-lg transition-all duration-300 hover:shadow-[0_0_40px_rgba(59,130,246,0.5)] hover:-translate-y-0.5"
             >
               Start for Free
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -176,7 +176,7 @@ export default function Home() {
             className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/5 rounded-2xl overflow-hidden border border-white/5"
           >
             {stats.map(({ value, label }) => (
-              <div key={label} className="bg-[#0f0f1a] px-6 py-5 text-center">
+              <div key={label} className="bg-[#0D1626] px-6 py-5 text-center">
                 <div className="text-2xl font-black bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">{value}</div>
                 <div className="text-xs text-slate-500 mt-1">{label}</div>
               </div>
@@ -233,7 +233,7 @@ export default function Home() {
       </section>
 
       {/* ── How It Works ── */}
-      <section className="py-24 px-4 bg-[#0a0a14]">
+      <section className="py-24 px-4 bg-[#08111E]">
         <div className="max-w-5xl mx-auto">
           <Section className="text-center mb-16">
             <span className="inline-block px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-semibold uppercase tracking-widest mb-4">How It Works</span>
@@ -305,7 +305,7 @@ export default function Home() {
       </section>
 
       {/* ── Testimonials ── */}
-      <section className="py-24 px-4 bg-[#0a0a14]">
+      <section className="py-24 px-4 bg-[#08111E]">
         <div className="max-w-6xl mx-auto">
           <Section className="text-center mb-14">
             <span className="inline-block px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold uppercase tracking-widest mb-4">Testimonials</span>
@@ -348,9 +348,9 @@ export default function Home() {
       <section className="py-24 px-4">
         <Section className="max-w-4xl mx-auto">
           <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-indigo-600/20 to-violet-600/20 border border-indigo-500/20 p-12 text-center">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.15)_0%,transparent_70%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.15)_0%,transparent_70%)]" />
             <div className="relative">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 mb-6 shadow-[0_0_40px_rgba(99,102,241,0.5)]">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 mb-6 shadow-[0_0_40px_rgba(59,130,246,0.5)]">
                 <Lock className="h-8 w-8 text-white" />
               </div>
               <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">Ready to Build Trust?</h2>
@@ -360,7 +360,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
                   onClick={() => navigate('/login')}
-                  className="group flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-2xl text-lg transition-all duration-300 hover:shadow-[0_0_40px_rgba(99,102,241,0.5)]"
+                  className="group flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-2xl text-lg transition-all duration-300 hover:shadow-[0_0_40px_rgba(59,130,246,0.5)]"
                 >
                   Get Started Free
                 </button>
