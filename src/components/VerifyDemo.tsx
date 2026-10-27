@@ -84,7 +84,7 @@ export default function VerifyDemo() {
             onChange={e => { setValue(e.target.value); setResult(null); }}
             autoComplete="off"
             spellCheck={false}
-            className="code-text min-w-0 flex-1 rounded-lg border border-line bg-mist px-3.5 py-3 text-[1.05rem] text-ink placeholder:text-faint focus:border-ledger-500 focus:bg-white focus:outline-none"
+            className="code-text w-full min-w-0 flex-1 rounded-lg border border-line bg-mist px-3.5 py-3 text-[1.05rem] text-ink placeholder:text-faint focus:border-ledger-500 focus:bg-white focus:outline-none"
             placeholder="e.g. TC7K-Q492-XMBD"
           />
           <button type="submit" className="rounded-lg bg-ledger-700 px-5 font-semibold text-white hover:bg-ledger-800">

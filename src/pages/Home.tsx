@@ -69,8 +69,8 @@ export default function Home() {
       <main>
         {/* Hero: the product itself */}
         <section className="border-b border-line">
-          <Container className="grid items-center gap-12 py-14 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:py-24">
-            <div>
+          <Container className="grid grid-cols-[minmax(0,1fr)] items-center gap-12 py-14 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-16 lg:py-24">
+            <div className="min-w-0">
               <h1 className="display text-[2.7rem] sm:text-[3.6rem] lg:text-[4.4rem] text-ink">
                 Know it's real before you take it.
               </h1>
@@ -89,7 +89,7 @@ export default function Home() {
               <p className="mt-6 text-sm text-muted">No app or account needed to check a product.</p>
             </div>
 
-            <div>
+            <div className="min-w-0">
               <VerifyDemo />
               <p className="mt-3 text-center text-xs text-faint">Sample packs and results for demonstration. The manufacturer shown is fictional.</p>
             </div>
@@ -126,7 +126,7 @@ export default function Home() {
 
         {/* Clone detection */}
         <section className="border-y border-line bg-mist py-20 lg:py-28">
-          <Container className="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+          <Container className="grid grid-cols-[minmax(0,1fr)] gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center">
             <div>
               <h2 className="display-md text-[2rem] sm:text-[2.6rem]">How a copied code gets caught</h2>
               <p className="mt-4 max-w-[52ch] text-[1.05rem] leading-relaxed text-muted">
@@ -169,7 +169,7 @@ export default function Home() {
         {/* Manufacturers: the one dark, bold section */}
         <section id="manufacturers" className="scroll-mt-16 bg-ledger-800 py-20 text-white lg:py-28">
           <Container>
-            <div className="grid gap-14 lg:grid-cols-2">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-14 lg:grid-cols-2">
               <div>
                 <h2 className="display-md text-[2rem] sm:text-[2.6rem]">Ready for NAFDAC's traceability rules</h2>
                 <p className="mt-4 max-w-[52ch] text-[1.05rem] leading-relaxed text-ledger-100">

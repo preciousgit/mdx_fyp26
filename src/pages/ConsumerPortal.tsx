@@ -46,7 +46,7 @@ function CodeForm({ initial = '', compact = false }: { initial?: string; compact
           autoComplete="off"
           spellCheck={false}
           placeholder="Type the code exactly as printed"
-          className="code-text min-w-0 flex-1 rounded-lg border border-line bg-mist px-3.5 py-3 text-[1.05rem] placeholder:font-normal placeholder:tracking-normal placeholder:text-faint focus:border-ledger-500 focus:bg-white focus:outline-none"
+          className="code-text w-full min-w-0 flex-1 rounded-lg border border-line bg-mist px-3.5 py-3 text-[1.05rem] placeholder:font-normal placeholder:tracking-normal placeholder:text-faint focus:border-ledger-500 focus:bg-white focus:outline-none"
         />
         <button type="submit" className="rounded-lg bg-ledger-700 px-5 font-semibold text-white hover:bg-ledger-800">Check</button>
       </div>
