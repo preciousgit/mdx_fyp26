@@ -1,32 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { Eye, EyeOff, ChevronLeft, Factory, Truck, UserRound } from 'lucide-react';
 import { api } from '../api';
 import { useAuth, Role } from '../AuthContext';
-import { ShieldCheck, Package, Truck, UserCircle, ArrowRight, Eye, EyeOff, ChevronLeft } from 'lucide-react';
+import { Logo, DataMatrix } from '../components/brand';
 
-const roles = [
-  { id: 'producer', icon: Package, label: 'Producer', desc: 'Register & track your products', gradient: 'from-blue-600 to-cyan-400' },
-  { id: 'distributor', icon: Truck, label: 'Distributor', desc: 'Log handoffs & conditions', gradient: 'from-violet-500 to-purple-500' },
-  { id: 'regulator', icon: ShieldCheck, label: 'Regulator', desc: 'Review & approve flagged items', gradient: 'from-emerald-500 to-teal-500' },
-  { id: 'consumer', icon: UserCircle, label: 'Consumer', desc: 'Verify products & leave reviews', gradient: 'from-amber-500 to-orange-500' },
+/* Regulators are not offered self sign-up: their accounts can recall products
+   and see every company's data, so they are created by invitation only. */
+const roles: { id: Role; icon: typeof Factory; label: string; desc: string }[] = [
+  { id: 'producer', icon: Factory, label: 'Manufacturer or brand', desc: 'Register products and print codes' },
+  { id: 'distributor', icon: Truck, label: 'Distributor', desc: 'Record handoffs and storage conditions' },
+  { id: 'consumer', icon: UserRound, label: 'Shopper', desc: 'Check products and leave reviews' },
 ];
+
+const field = 'w-full rounded-lg border border-line bg-paper px-3.5 py-3 text-[0.98rem] text-ink placeholder:text-faint focus:border-ledger-500 focus:outline-none';
 
 export default function Login() {
   const { user, profile, login } = useAuth();
   const navigate = useNavigate();
+  const ids = { email: useId(), pass: useId(), name: useId(), co: useId(), prefix: useId() };
   const [step, setStep] = useState<'auth' | 'role'>('auth');
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
-  const [role, setRole] = useState<Role>('consumer');
+  const [role, setRole] = useState<Role>('producer');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [companyPrefix, setCompanyPrefix] = useState('');
-  const [pendingEmail, setPendingEmail] = useState('');
-  const [pendingPassword, setPendingPassword] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -36,19 +38,18 @@ export default function Login() {
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    if (isSignUp) {
+      if (password.length < 10) { setError('Use at least 10 characters for your password.'); return; }
+      setStep('role');
+      return;
+    }
     try {
       setLoading(true);
-      if (isSignUp) {
-        setPendingEmail(email);
-        setPendingPassword(password);
-        setStep('role');
-      } else {
-        const result = await api.auth.login(email, password);
-        login(result.token, result.user);
-        navigate('/dashboard');
-      }
+      const result = await api.auth.login(email, password);
+      login(result.token, result.user);
+      navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Authentication failed.');
+      setError(err.message || 'Email or password is incorrect.');
     } finally {
       setLoading(false);
     }
@@ -60,8 +61,8 @@ export default function Login() {
     try {
       setLoading(true);
       const result = await api.auth.register({
-        email: pendingEmail,
-        password: pendingPassword,
+        email,
+        password,
         role,
         name: fullName,
         companyName: role === 'producer' || role === 'distributor' ? companyName : '',
@@ -70,198 +71,144 @@ export default function Login() {
       login(result.token, result.user);
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Registration failed.');
+      setError(err.message || 'We couldn’t create your account. Try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#060B14] text-white flex overflow-hidden">
-      {/* Left panel – decorative */}
-      <div className="hidden lg:flex lg:w-1/2 relative flex-col items-center justify-center p-12 overflow-hidden">
-        {/* Gradient bg */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 to-[#060B14]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.2)_0%,transparent_70%)]" />
-        <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-60 h-60 bg-violet-600/10 rounded-full blur-3xl" />
-        {/* Grid */}
-        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.5) 1px,transparent 1px)', backgroundSize: '50px 50px' }} />
-
-        <div className="relative text-center max-w-md">
-          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7 }} className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-indigo-500 to-violet-600 mb-8 shadow-[0_0_60px_rgba(59,130,246,0.5)]">
-            <ShieldCheck className="h-10 w-10 text-white" />
-          </motion.div>
-          <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-4xl font-black mb-4">
-            Trust<span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Chain</span>
-          </motion.h2>
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-slate-400 text-lg leading-relaxed mb-10">
-            Blockchain-style trust across every link in the supply chain.
-          </motion.p>
-          {/* Feature bullets */}
-          {['Immutable audit trails', 'Real-time risk scoring', 'Multi-role access control', 'Consumer product verification'].map((f, i) => (
-            <motion.div key={f} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 + i * 0.1 }} className="flex items-center gap-3 text-left mb-3">
-              <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
-                <div className="w-2 h-2 rounded-full bg-emerald-400" />
-              </div>
-              <span className="text-slate-300 text-sm">{f}</span>
-            </motion.div>
-          ))}
+    <div className="grid min-h-screen bg-paper text-ink lg:grid-cols-[1fr_1.1fr]">
+      {/* Context panel */}
+      <aside className="hidden flex-col justify-between bg-ledger-800 p-12 text-white lg:flex">
+        <Logo inverted />
+        <div className="max-w-md">
+          <div className="inline-block rounded-lg bg-white p-3">
+            <DataMatrix seed="sign-in" size={96} modules={14} color="#0E4D3A" />
+          </div>
+          <p className="display-md mt-8 text-[2.2rem]">Every pack, one record, shared by everyone who handles it.</p>
+          <p className="mt-4 leading-relaxed text-ledger-100">
+            Manufacturers register batches, distributors log each handoff, regulators see the whole chain and shoppers check before they buy.
+          </p>
         </div>
-      </div>
+        <p className="text-sm text-ledger-200">Shopping? You don't need an account. <Link to="/verify" className="underline underline-offset-2 hover:text-white">Check a product</Link></p>
+      </aside>
 
-      {/* Right panel – form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
-        <div className="w-full max-w-md">
-          {/* Mobile logo */}
-          <Link to="/" className="flex lg:hidden items-center gap-3 mb-10 group w-fit">
-            <div className="relative">
-              <div className="absolute inset-0 bg-indigo-500 rounded-xl blur-md opacity-50" />
-              <div className="relative bg-gradient-to-br from-indigo-500 to-violet-600 p-2 rounded-xl">
-                <ShieldCheck className="h-5 w-5 text-white" />
-              </div>
-            </div>
-            <span className="text-white font-bold text-xl">Trust<span className="text-indigo-400">Chain</span></span>
-          </Link>
+      {/* Form */}
+      <main className="flex items-center justify-center px-4 py-12 sm:px-8">
+        <div className="w-full max-w-[26rem]">
+          <div className="mb-10 lg:hidden"><Logo /></div>
 
-          <AnimatePresence mode="wait">
-            {step === 'auth' ? (
-              <motion.div key="auth" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.4 }}>
-                <div className="mb-8">
-                  <h1 className="text-3xl font-black text-white mb-2">
-                    {isSignUp ? 'Create your account' : 'Welcome back'}
-                  </h1>
-                  <p className="text-slate-500">{isSignUp ? 'Join the TrustChain network today.' : 'Sign in to your TrustChain account.'}</p>
+          {step === 'auth' ? (
+            <>
+              <h1 className="display-md text-[2rem]">{isSignUp ? 'Create your account' : 'Sign in'}</h1>
+              <p className="mt-2 text-muted">{isSignUp ? 'For manufacturers, brands, distributors and shoppers.' : 'Welcome back to TrustChain.'}</p>
+
+              <form onSubmit={handleEmailAuth} className="mt-8 space-y-5" noValidate={false}>
+                <div>
+                  <label htmlFor={ids.email} className="mb-1.5 block text-sm font-medium">Email address</label>
+                  <input id={ids.email} type="email" required autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} className={field} />
                 </div>
-
-                <form onSubmit={handleEmailAuth} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-1.5">Email address</label>
+                <div>
+                  <label htmlFor={ids.pass} className="mb-1.5 block text-sm font-medium">Password</label>
+                  <div className="relative">
                     <input
-                      type="email"
+                      id={ids.pass}
+                      type={showPass ? 'text' : 'password'}
                       required
-                      value={email}
-                      onChange={e => setEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:bg-white/[0.07] transition-all text-sm"
+                      autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                      minLength={isSignUp ? 10 : undefined}
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      className={`${field} pr-12`}
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPass(s => !s)}
+                      aria-label={showPass ? 'Hide password' : 'Show password'}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-2 text-muted hover:text-ink"
+                    >
+                      {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-1.5">Password</label>
-                    <div className="relative">
-                      <input
-                        type={showPass ? 'text' : 'password'}
-                        required
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:bg-white/[0.07] transition-all text-sm pr-12"
-                      />
-                      <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
-                        {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  {error && (
-                    <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
-                      {error}
-                    </motion.div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] text-sm"
-                  >
-                    {loading ? <span className="animate-pulse">Processing…</span> : (isSignUp ? <><span>Continue</span><ArrowRight className="h-4 w-4" /></> : 'Sign In')}
-                  </button>
-                </form>
-
-                <p className="text-center text-slate-600 text-sm mt-6">
-                  {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
-                  <button onClick={() => { setIsSignUp(!isSignUp); setError(''); }} className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
-                    {isSignUp ? 'Sign in' : 'Sign up'}
-                  </button>
-                </p>
-
-                <div className="mt-6 pt-6 border-t border-white/5 text-center">
-                  <button onClick={() => navigate('/verify')} className="text-slate-600 hover:text-slate-400 text-sm transition-colors">
-                    Verify a product without signing in →
-                  </button>
+                  {isSignUp && <p className="mt-1.5 text-sm text-muted">At least 10 characters. A short phrase is easiest to remember.</p>}
                 </div>
-              </motion.div>
-            ) : (
-              <motion.div key="role" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.4 }}>
-                <button onClick={() => setStep('auth')} className="flex items-center gap-1 text-slate-500 hover:text-slate-300 text-sm mb-8 transition-colors">
-                  <ChevronLeft className="h-4 w-4" /> Back
+
+                {error && <p role="alert" className="rounded-lg bg-recalled-bg px-3.5 py-3 text-sm text-recalled">{error}</p>}
+
+                <button type="submit" disabled={loading} className="w-full rounded-lg bg-ledger-700 py-3 font-semibold text-white hover:bg-ledger-800 disabled:opacity-60">
+                  {loading ? 'Signing in…' : isSignUp ? 'Continue' : 'Sign in'}
                 </button>
-                <div className="mb-8">
-                  <h1 className="text-3xl font-black text-white mb-2">Complete your profile</h1>
-                  <p className="text-slate-500">Tell us about yourself so we can set up your workspace.</p>
+              </form>
+
+              <p className="mt-6 text-sm text-muted">
+                {isSignUp ? 'Already have an account?' : 'New to TrustChain?'}{' '}
+                <button onClick={() => { setIsSignUp(s => !s); setError(''); }} className="font-semibold text-ledger-700 hover:underline">
+                  {isSignUp ? 'Sign in' : 'Create an account'}
+                </button>
+              </p>
+              <p className="mt-8 border-t border-line pt-6 text-sm text-muted">
+                Work for a regulator? <Link to="/contact?topic=regulator" className="font-semibold text-ink hover:underline">Request regulator access</Link>
+              </p>
+            </>
+          ) : (
+            <>
+              <button onClick={() => setStep('auth')} className="-ml-1 mb-6 inline-flex items-center gap-1 rounded-md px-1 py-1 text-sm text-muted hover:text-ink">
+                <ChevronLeft className="h-4 w-4" /> Back
+              </button>
+              <h1 className="display-md text-[2rem]">About you</h1>
+              <p className="mt-2 text-muted">This sets up the right workspace for you.</p>
+
+              <form onSubmit={handleRegister} className="mt-8 space-y-5">
+                <fieldset>
+                  <legend className="mb-2 text-sm font-medium">I am a</legend>
+                  <div className="space-y-2">
+                    {roles.map(r => (
+                      <label
+                        key={r.id}
+                        className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3.5 transition-colors ${role === r.id ? 'border-ledger-600 bg-ledger-50' : 'border-line hover:border-faint'}`}
+                      >
+                        <input type="radio" name="role" value={r.id} checked={role === r.id} onChange={() => setRole(r.id)} className="sr-only" />
+                        <r.icon className={`h-5 w-5 shrink-0 ${role === r.id ? 'text-ledger-700' : 'text-muted'}`} aria-hidden="true" />
+                        <span>
+                          <span className="block font-semibold">{r.label}</span>
+                          <span className="block text-sm text-muted">{r.desc}</span>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+
+                <div>
+                  <label htmlFor={ids.name} className="mb-1.5 block text-sm font-medium">Full name</label>
+                  <input id={ids.name} required autoComplete="name" value={fullName} onChange={e => setFullName(e.target.value)} className={field} />
                 </div>
 
-                <form onSubmit={handleRegister} className="space-y-5">
-                  {/* Role selector */}
+                {(role === 'producer' || role === 'distributor') && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-3">Select your role</label>
-                    <div className="grid grid-cols-2 gap-3">
-                      {roles.map(r => (
-                        <button
-                          key={r.id}
-                          type="button"
-                          onClick={() => setRole(r.id as Role)}
-                          className={`relative p-4 rounded-xl border text-left transition-all duration-200 ${role === r.id ? 'border-indigo-500 bg-indigo-500/10' : 'border-white/10 bg-white/[0.02] hover:border-white/20'}`}
-                        >
-                          {role === r.id && <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-indigo-400" />}
-                          <div className={`inline-flex p-2 rounded-lg bg-gradient-to-br ${r.gradient} mb-2`}>
-                            <r.icon className="h-4 w-4 text-white" />
-                          </div>
-                          <p className="text-white font-semibold text-sm">{r.label}</p>
-                          <p className="text-slate-500 text-xs mt-0.5">{r.desc}</p>
-                        </button>
-                      ))}
-                    </div>
+                    <label htmlFor={ids.co} className="mb-1.5 block text-sm font-medium">Company name</label>
+                    <input id={ids.co} required autoComplete="organization" value={companyName} onChange={e => setCompanyName(e.target.value)} className={field} />
                   </div>
+                )}
 
+                {role === 'producer' && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-1.5">Full Name</label>
-                    <input type="text" required value={fullName} onChange={e => setFullName(e.target.value)} placeholder="Jane Doe" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all text-sm" />
+                    <label htmlFor={ids.prefix} className="mb-1.5 block text-sm font-medium">Product code prefix</label>
+                    <input id={ids.prefix} required maxLength={5} value={companyPrefix} onChange={e => setCompanyPrefix(e.target.value.toUpperCase())} className={`${field} code-text uppercase`} />
+                    <p className="mt-1.5 text-sm text-muted">Up to 5 letters, shown at the start of your product IDs.</p>
                   </div>
+                )}
 
-                  {(role === 'producer' || role === 'distributor') && (
-                    <div>
-                      <label className="block text-sm font-medium text-slate-400 mb-1.5">Company Name</label>
-                      <input type="text" required value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="Acme Corp" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all text-sm" />
-                    </div>
-                  )}
+                {error && <p role="alert" className="rounded-lg bg-recalled-bg px-3.5 py-3 text-sm text-recalled">{error}</p>}
 
-                  {role === 'producer' && (
-                    <div>
-                      <label className="block text-sm font-medium text-slate-400 mb-1.5">Company Prefix <span className="text-slate-600">(max 5 chars, e.g. CCA)</span></label>
-                      <input type="text" required maxLength={5} value={companyPrefix} onChange={e => setCompanyPrefix(e.target.value.toUpperCase())} placeholder="CCA" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all text-sm uppercase" />
-                    </div>
-                  )}
-
-                  {error && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
-                      {error}
-                    </motion.div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] text-sm"
-                  >
-                    {loading ? <span className="animate-pulse">Creating account…</span> : <><span>Join TrustChain</span><ArrowRight className="h-4 w-4" /></>}
-                  </button>
-                </form>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                <button type="submit" disabled={loading} className="w-full rounded-lg bg-ledger-700 py-3 font-semibold text-white hover:bg-ledger-800 disabled:opacity-60">
+                  {loading ? 'Creating account…' : 'Create account'}
+                </button>
+              </form>
+            </>
+          )}
         </div>
-      </div>
+      </main>
     </div>
   );
 }

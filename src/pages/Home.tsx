@@ -1,380 +1,277 @@
-import React, { useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { motion, useInView, type Variants } from 'motion/react';
-import {
-  ShieldCheck, Package, Truck, BarChart3, ArrowRight, CheckCircle,
-  Star, ChevronRight, Zap, Lock, Globe, Layers, Clock, TrendingUp
-} from 'lucide-react';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Globe2, Camera, MessageCircle, Phone, ExternalLink } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import PlexusBackground from '../components/PlexusBackground';
+import VerifyDemo from '../components/VerifyDemo';
+import { Container } from '../components/brand';
 
-// ─── Animation helpers ────────────────────────────────────────────────────────
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 40 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: 'easeOut' } },
-};
-const stagger = (i: number): Variants => ({
-  hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, delay: i * 0.12, ease: 'easeOut' } },
-});
-
-function Section({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
-  return (
-    <motion.div ref={ref} initial="hidden" animate={inView ? 'show' : 'hidden'} variants={fadeUp} className={className}>
-      {children}
-    </motion.div>
-  );
-}
-
-// ─── Static data ──────────────────────────────────────────────────────────────
-const sponsors = ['Maersk', 'DHL', 'Unilever', 'Nestlé', 'Walmart', 'Amazon', 'FedEx', 'BASF', 'Pfizer', 'Toyota', 'Samsung', 'Siemens'];
-
-const services = [
-  { icon: Package, title: 'Product Registration', desc: 'Register products with unique blockchain IDs, media, and full metadata. Every item gets an immutable digital passport.', gradient: 'from-blue-600 to-cyan-400' },
-  { icon: Truck, title: 'Supply Chain Tracking', desc: 'Real-time handoff logging with environmental conditions. Every transfer is cryptographically sealed on the ledger.', gradient: 'from-violet-500 to-purple-600' },
-  { icon: ShieldCheck, title: 'Regulatory Compliance', desc: 'Automated risk scoring and instant regulatory review workflows. Stay ahead of compliance without the paperwork.', gradient: 'from-emerald-500 to-teal-500' },
-  { icon: BarChart3, title: 'Analytics & Insights', desc: 'Deep supply chain analytics with risk heatmaps, audit trails, and consumer sentiment reports in real time.', gradient: 'from-orange-500 to-amber-500' },
+const journey = [
+  { who: 'Manufacturer', what: 'Registers the batch and prints a unique code on every pack.' },
+  { who: 'Distributor', what: 'Records each handoff, with temperature and condition, before the pack can move on.' },
+  { who: 'Pharmacy or shop', what: 'Confirms the pack arrived from a known supplier.' },
+  { who: 'You', what: 'Check the code before you buy, and see the whole journey.' },
 ];
 
-const steps = [
-  { step: '01', title: 'Register Your Product', desc: 'Upload product details, photos, and videos. A unique blockchain-style ID is instantly minted.' },
-  { step: '02', title: 'Track Every Handoff', desc: 'Distributors log real-world conditions at each transfer. Temperature, humidity, location — all sealed immutably.' },
-  { step: '03', title: 'Regulatory Review', desc: 'Flagged items surface automatically to regulators. One-click approvals or rejections with full audit logs.' },
-  { step: '04', title: 'Consumer Verification', desc: 'Anyone can scan a product ID to verify its full origin-to-shelf journey, reviews, and compliance status.' },
+const scanLog = [
+  { when: '2 Sep, 10:14', where: 'Lagos', result: 'First check', ok: true },
+  { when: '5 Sep, 16:02', where: 'Kano', result: 'Already checked', ok: false },
+  { when: '5 Sep, 16:09', where: 'Kano', result: 'Already checked', ok: false },
+  { when: '6 Sep, 09:40', where: 'Kaduna', result: 'Already checked', ok: false },
 ];
 
-const testimonials = [
-  { name: 'Sarah Mitchell', role: 'Head of Supply Chain, NatureFresh', text: 'TrustChain gave us complete visibility across 12 distribution hubs. We reduced compliance incidents by 67% in the first quarter.', rating: 5, avatar: 'SM' },
-  { name: 'David Okafor', role: 'Regulatory Director, FoodSafe EU', text: "The immutable audit trail is exactly what regulators need. We've cut inspection processing time from 5 days to under 4 hours.", rating: 5, avatar: 'DO' },
-  { name: 'Priya Sharma', role: 'Operations VP, GlobalTrace Logistics', text: "Best-in-class UX for a compliance platform. Our team adopted it with zero training. The risk scoring caught 3 cold-chain breaches we would have missed.", rating: 5, avatar: 'PS' },
+const phases = [
+  { date: '1 Jan 2027', scope: 'Narcotics and controlled medicines' },
+  { date: '1 Jan 2028', scope: 'Antimalarials, antibiotics, and maternal, newborn and child health products' },
+  { date: '1 Jan 2029', scope: 'All finished pharmaceutical products' },
 ];
 
-const news = [
-  { tag: 'Industry', date: 'Apr 9, 2026', title: 'How Blockchain Traceability Is Reshaping Food Safety Regulations in 2026', excerpt: 'New EU mandates require end-to-end digital traceability for all imported food products by Q3 2026. Here\'s what that means for producers.', readTime: '5 min read' },
-  { tag: 'Platform', date: 'Apr 2, 2026', title: 'TrustChain v2.0: Real-Time Risk Scoring and Enhanced Distributor Workflows', excerpt: 'Our latest release introduces AI-powered risk prediction, multi-media product registration, and a redesigned regulatory dashboard.', readTime: '3 min read' },
-  { tag: 'Research', date: 'Mar 28, 2026', title: 'The True Cost of Supply Chain Opacity: A 2026 Global Study', excerpt: 'Opaque supply chains cost the global economy $1.7 trillion annually. This study breaks down where the losses occur and how traceability closes the gap.', readTime: '8 min read' },
+const pilotIncludes = [
+  'GS1 DataMatrix codes carrying GTIN, batch, expiry and a unique serial for each pack',
+  'Help registering a Global Location Number (GLN) for each of your sites',
+  'A dashboard showing where every batch is, and where its codes are being checked',
+  'Batch recall in minutes, with a list of every distributor and outlet that received it',
 ];
 
-const stats = [
-  { value: '2.4M+', label: 'Products Verified' },
-  { value: '98.7%', label: 'Audit Accuracy' },
-  { value: '340+', label: 'Supply Chains' },
-  { value: '<4h', label: 'Avg. Review Time' },
+const channels = [
+  { icon: Globe2, name: 'Website', text: 'Type the code on this website, from any browser.', status: 'Available now' },
+  { icon: Camera, name: 'Phone camera', text: 'Point the camera at the code on the pack.', status: 'In development' },
+  { icon: MessageCircle, name: 'WhatsApp', text: 'Send the code in a chat and get the answer back.', status: 'In development' },
+  { icon: Phone, name: 'USSD', text: 'Dial a short code from any phone, no data needed.', status: 'Planned' },
 ];
 
-// ─── Component ────────────────────────────────────────────────────────────────
+const facts = [
+  {
+    figure: '₦22.7bn',
+    text: 'of unsafe, falsified or unregistered products destroyed by NAFDAC between January and August 2026.',
+    source: 'Tribune, Oct 2026',
+    href: 'https://tribuneonlineng.com/nafdac-destroys-n22-73bn-in-unsafe-products-records-5542-enforcement-operations/',
+  },
+  {
+    figure: '12,300',
+    text: 'deaths a year in Nigeria could be avoided if poor-quality antimalarials were replaced with good ones.',
+    source: 'Beargie et al., PLOS ONE, 2019',
+    href: 'https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0217910',
+  },
+  {
+    figure: '401 of 821',
+    text: 'NAFDAC seizure entries in 2026 so far were cosmetics. Drinks were next with 215.',
+    source: 'Tribune, Oct 2026',
+    href: 'https://tribuneonlineng.com/nafdac-destroys-n22-73bn-in-unsafe-products-records-5542-enforcement-operations/',
+  },
+];
+
 export default function Home() {
-  const navigate = useNavigate();
-
   return (
-    <div className="min-h-screen bg-[#060B14] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-paper text-ink">
       <Navbar />
 
-      {/* ── Hero ── */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
-        {/* ── Plexus network layer (matches blue network image aesthetic) ── */}
-        <div
-          className="absolute inset-0 z-0"
-          style={{
-            // Fade: fully visible at bottom-left (where the network is dense),
-            // dissolves toward the top-center and right edge, merging with #060B14
-            WebkitMaskImage: [
-              'radial-gradient(ellipse 80% 55% at 25% 80%, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 45%, transparent 70%)',
-              'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 45%, transparent 75%)',
-            ].join(','),
-            maskImage: [
-              'radial-gradient(ellipse 80% 55% at 25% 80%, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 45%, transparent 70%)',
-              'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 45%, transparent 75%)',
-            ].join(','),
-          }}
-        >
-          <PlexusBackground className="absolute inset-0" />
-        </div>
-
-        {/* ── Original ambience (kept on top of plexus for depth layering) ── */}
-        <div className="absolute inset-0 z-[1] pointer-events-none">
-          {/* Top glow pushes through the plexus mesh giving volumetric feel */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.12)_0%,transparent_60%)]" />
-          {/* Subtle colour blobs */}
-          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-indigo-600/5 rounded-full blur-3xl" />
-          <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-violet-600/5 rounded-full blur-3xl" />
-          {/* Fine grid overlaid at very low opacity */}
-          <div
-            className="absolute inset-0 opacity-[0.025]"
-            style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.3) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.3) 1px,transparent 1px)', backgroundSize: '60px 60px' }}
-          />
-          {/* Bottom vignette — hard seal against the next section */}
-          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#060B14] to-transparent" />
-        </div>
-
-        <div className="relative z-2 max-w-6xl mx-auto pt-32 pb-24 text-center">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm font-medium mb-8"
-          >
-            <Zap className="h-4 w-4" />
-            Blockchain-style supply chain traceability
-          </motion.div>
-
-          {/* Headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05] mb-6"
-          >
-            <span className="text-white">Trust Every</span>
-            <br />
-            <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
-              Link in the Chain
-            </span>
-          </motion.h1>
-
-          {/* Sub */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="max-w-2xl mx-auto text-lg sm:text-xl text-slate-400 leading-relaxed mb-10"
-          >
-            TrustChain gives producers, distributors, regulators, and consumers a single source of truth — an immutable, cryptographically verified record of every product's journey.
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
-          >
-            <button
-              onClick={() => navigate('/login')}
-              className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-2xl text-lg transition-all duration-300 hover:shadow-[0_0_40px_rgba(59,130,246,0.5)] hover:-translate-y-0.5"
-            >
-              Start for Free
-              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </button>
-            <button
-              onClick={() => navigate('/verify')}
-              className="flex items-center gap-2 px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white font-semibold rounded-2xl text-lg transition-all duration-300"
-            >
-              Verify a Product
-            </button>
-          </motion.div>
-
-          {/* Stats strip */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/5 rounded-2xl overflow-hidden border border-white/5"
-          >
-            {stats.map(({ value, label }) => (
-              <div key={label} className="bg-[#0D1626] px-6 py-5 text-center">
-                <div className="text-2xl font-black bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">{value}</div>
-                <div className="text-xs text-slate-500 mt-1">{label}</div>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── Sponsors Marquee ── */}
-      <section className="py-12 border-y border-white/5 overflow-hidden">
-        <p className="text-center text-slate-600 text-xs uppercase tracking-[0.2em] mb-8">Trusted by leaders across global supply chains</p>
-        <div className="relative flex">
-          <motion.div
-            className="flex gap-16 items-center whitespace-nowrap"
-            animate={{ x: ['0%', '-50%'] }}
-            transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-          >
-            {[...sponsors, ...sponsors].map((name, i) => (
-              <span key={i} className="text-slate-600 font-bold text-lg tracking-wide hover:text-slate-400 transition-colors cursor-default select-none">
-                {name}
-              </span>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── Services ── */}
-      <section className="py-24 px-4 max-w-7xl mx-auto">
-        <Section className="text-center mb-16">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold uppercase tracking-widest mb-4">What We Do</span>
-          <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">One Platform.<br /><span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Total Visibility.</span></h2>
-          <p className="text-slate-400 text-lg max-w-xl mx-auto">Everything you need to run a transparent, compliant, and trustworthy supply chain operation.</p>
-        </Section>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {services.map((s, i) => (
-            <motion.div
-              key={s.title}
-              variants={stagger(i)}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: '-60px' }}
-              whileHover={{ y: -6, transition: { duration: 0.2 } }}
-              className="group relative bg-white/[0.03] border border-white/6 rounded-2xl p-6 hover:border-white/10 hover:bg-white/[0.05] transition-all duration-300 cursor-default"
-            >
-              <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${s.gradient} mb-5 shadow-lg`}>
-                <s.icon className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-white font-bold text-lg mb-2">{s.title}</h3>
-              <p className="text-slate-500 text-sm leading-relaxed">{s.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── How It Works ── */}
-      <section className="py-24 px-4 bg-[#08111E]">
-        <div className="max-w-5xl mx-auto">
-          <Section className="text-center mb-16">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-semibold uppercase tracking-widest mb-4">How It Works</span>
-            <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">Four Steps to <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">Full Traceability</span></h2>
-          </Section>
-
-          <div className="space-y-6">
-            {steps.map((s, i) => (
-              <motion.div
-                key={s.step}
-                variants={stagger(i)}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, margin: '-40px' }}
-                className="flex gap-6 items-start bg-white/[0.02] border border-white/[0.05] rounded-2xl p-6 hover:border-indigo-500/20 transition-colors duration-300"
-              >
-                <div className="shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-600/20 to-violet-600/20 border border-indigo-500/20 flex items-center justify-center">
-                  <span className="text-indigo-400 font-black text-sm">{s.step}</span>
-                </div>
-                <div>
-                  <h4 className="text-white font-bold text-lg mb-1">{s.title}</h4>
-                  <p className="text-slate-500 text-sm leading-relaxed">{s.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── News / Blog ── */}
-      <section className="py-24 px-4 max-w-7xl mx-auto">
-        <Section className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-4">
-          <div>
-            <span className="inline-block px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-3">Latest News</span>
-            <h2 className="text-3xl sm:text-4xl font-black text-white">From the Frontlines<br />of Supply Chain</h2>
-          </div>
-          <Link to="/" className="flex items-center gap-2 text-indigo-400 hover:text-indigo-300 text-sm font-semibold transition-colors">
-            View all posts <ChevronRight className="h-4 w-4" />
-          </Link>
-        </Section>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {news.map((post, i) => (
-            <motion.article
-              key={post.title}
-              variants={stagger(i)}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: '-60px' }}
-              whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="group bg-white/[0.03] border border-white/6 rounded-2xl overflow-hidden hover:border-white/10 cursor-pointer transition-all duration-300"
-            >
-              {/* Image placeholder */}
-              <div className={`h-44 bg-gradient-to-br ${i === 0 ? 'from-indigo-900/50 to-violet-900/50' : i === 1 ? 'from-violet-900/50 to-purple-900/50' : 'from-emerald-900/50 to-teal-900/50'} flex items-center justify-center`}>
-                {i === 0 ? <ShieldCheck className="h-12 w-12 text-indigo-400/40" /> : i === 1 ? <Layers className="h-12 w-12 text-violet-400/40" /> : <TrendingUp className="h-12 w-12 text-emerald-400/40" />}
-              </div>
-              <div className="p-5">
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full bg-indigo-500/10 text-indigo-400">{post.tag}</span>
-                  <span className="text-slate-600 text-xs flex items-center gap-1"><Clock className="h-3 w-3" /> {post.readTime}</span>
-                </div>
-                <h3 className="text-white font-bold text-base leading-snug mb-2 group-hover:text-indigo-300 transition-colors">{post.title}</h3>
-                <p className="text-slate-500 text-sm leading-relaxed line-clamp-2">{post.excerpt}</p>
-                <p className="text-slate-600 text-xs mt-4">{post.date}</p>
-              </div>
-            </motion.article>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Testimonials ── */}
-      <section className="py-24 px-4 bg-[#08111E]">
-        <div className="max-w-6xl mx-auto">
-          <Section className="text-center mb-14">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold uppercase tracking-widest mb-4">Testimonials</span>
-            <h2 className="text-4xl sm:text-5xl font-black text-white">Trusted by the <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">Best in the Business</span></h2>
-          </Section>
-
-          <div className="grid sm:grid-cols-3 gap-6">
-            {testimonials.map((t, i) => (
-              <motion.div
-                key={t.name}
-                variants={stagger(i)}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, margin: '-60px' }}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="bg-white/[0.03] border border-white/6 rounded-2xl p-6 hover:border-white/10 transition-all duration-300"
-              >
-                <div className="flex gap-1 mb-4">
-                  {[...Array(t.rating)].map((_, j) => (
-                    <Star key={j} className="h-4 w-4 text-amber-400 fill-current" />
-                  ))}
-                </div>
-                <p className="text-slate-300 text-sm leading-relaxed mb-6">"{t.text}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                    {t.avatar}
-                  </div>
-                  <div>
-                    <p className="text-white font-semibold text-sm">{t.name}</p>
-                    <p className="text-slate-500 text-xs">{t.role}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── CTA Banner ── */}
-      <section className="py-24 px-4">
-        <Section className="max-w-4xl mx-auto">
-          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-indigo-600/20 to-violet-600/20 border border-indigo-500/20 p-12 text-center">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.15)_0%,transparent_70%)]" />
-            <div className="relative">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 mb-6 shadow-[0_0_40px_rgba(59,130,246,0.5)]">
-                <Lock className="h-8 w-8 text-white" />
-              </div>
-              <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">Ready to Build Trust?</h2>
-              <p className="text-slate-400 text-lg mb-8 max-w-xl mx-auto">
-                Join hundreds of organisations using TrustChain to make their supply chains transparent, compliant, and consumer-ready.
+      <main>
+        {/* Hero: the product itself */}
+        <section className="border-b border-line">
+          <Container className="grid items-center gap-12 py-14 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:py-24">
+            <div>
+              <h1 className="display text-[2.7rem] sm:text-[3.6rem] lg:text-[4.4rem] text-ink">
+                Know it's real before you take it.
+              </h1>
+              <p className="mt-6 max-w-[34rem] text-[1.15rem] leading-relaxed text-muted">
+                TrustChain gives every pack of medicine, cosmetics or drink its own code. Check the code and see who made it,
+                every hand it passed through, and whether it has been recalled.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button
-                  onClick={() => navigate('/login')}
-                  className="group flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-2xl text-lg transition-all duration-300 hover:shadow-[0_0_40px_rgba(59,130,246,0.5)]"
-                >
-                  Get Started Free
-                </button>
-                <button
-                  onClick={() => navigate('/contact')}
-                  className="flex items-center justify-center gap-2 px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold rounded-2xl text-lg transition-all duration-300"
-                >
-                  Talk to Sales
-                </button>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link to="/verify" className="rounded-lg bg-ledger-700 px-5 py-3 font-semibold text-white hover:bg-ledger-800">
+                  Check a product
+                </Link>
+                <a href="#manufacturers" className="rounded-lg border border-line px-5 py-3 font-semibold text-ink hover:border-faint">
+                  I make or import products
+                </a>
+              </div>
+              <p className="mt-6 text-sm text-muted">No app or account needed to check a product.</p>
+            </div>
+
+            <div>
+              <VerifyDemo />
+              <p className="mt-3 text-center text-xs text-faint">Sample packs and results for demonstration. The manufacturer shown is fictional.</p>
+            </div>
+          </Container>
+        </section>
+
+        {/* Journey: a real sequence, so it is numbered */}
+        <section id="how-it-works" className="scroll-mt-20 py-20 lg:py-28">
+          <Container>
+            <h2 className="display-md max-w-[22ch] text-[2rem] sm:text-[2.6rem]">One code follows the pack from factory to shelf</h2>
+            <p className="mt-4 max-w-[60ch] text-[1.05rem] leading-relaxed text-muted">
+              Everyone who handles the pack adds to the same record. Each entry is linked to the one before it, so a changed record shows up as broken.
+            </p>
+
+            <ol className="mt-12 grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+              {journey.map((j, i) => (
+                <li key={j.who} className="bg-paper p-6">
+                  <span className="tnum flex h-8 w-8 items-center justify-center rounded-full bg-ledger-700 text-sm font-semibold text-white" aria-hidden="true">
+                    {i + 1}
+                  </span>
+                  <h3 className="mt-5 text-lg font-semibold">{j.who}</h3>
+                  <p className="mt-2 leading-relaxed text-muted">{j.what}</p>
+                </li>
+              ))}
+            </ol>
+            <div className="mt-px rounded-b-xl border border-t-0 border-line bg-ledger-50 px-6 py-5 sm:flex sm:items-baseline sm:gap-6">
+              <h3 className="shrink-0 text-lg font-semibold text-ledger-800">Regulators</h3>
+              <p className="mt-1 leading-relaxed text-ink sm:mt-0">
+                See every step for every product, trace a batch to each outlet that received it, and order a recall from one screen.
+              </p>
+            </div>
+          </Container>
+        </section>
+
+        {/* Clone detection */}
+        <section className="border-y border-line bg-mist py-20 lg:py-28">
+          <Container className="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+            <div>
+              <h2 className="display-md text-[2rem] sm:text-[2.6rem]">How a copied code gets caught</h2>
+              <p className="mt-4 max-w-[52ch] text-[1.05rem] leading-relaxed text-muted">
+                Counterfeiters can photocopy a label, but they can't copy its history. Each code is printed once and expected to be checked once.
+                When the same code turns up again, somewhere else, we tell the shopper not to use the pack and alert the brand and the regulator with where it happened.
+              </p>
+            </div>
+            <figure className="overflow-hidden rounded-xl border border-line bg-paper">
+              <figcaption className="flex items-center justify-between border-b border-line px-5 py-3 text-sm">
+                <span className="font-semibold">Checks of code <span className="code-text">TC3P-81LW-ZR6A</span></span>
+                <span className="text-muted">Sample</span>
+              </figcaption>
+              <table className="w-full text-left text-[0.95rem]">
+                <thead className="text-sm text-muted">
+                  <tr>
+                    <th scope="col" className="px-5 py-2.5 font-medium">When</th>
+                    <th scope="col" className="px-5 py-2.5 font-medium">Where</th>
+                    <th scope="col" className="px-5 py-2.5 font-medium">Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {scanLog.map((s, i) => (
+                    <tr key={i} className="border-t border-line">
+                      <td className="tnum px-5 py-3 text-muted">{s.when}</td>
+                      <td className="px-5 py-3">{s.where}</td>
+                      <td className="px-5 py-3">
+                        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-sm font-medium ${s.ok ? 'bg-genuine-bg text-genuine' : 'bg-recalled-bg text-recalled'}`}>
+                          <span className={`h-1.5 w-1.5 rounded-full ${s.ok ? 'bg-genuine' : 'bg-recalled'}`} aria-hidden="true" />
+                          {s.result}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </figure>
+          </Container>
+        </section>
+
+        {/* Manufacturers: the one dark, bold section */}
+        <section id="manufacturers" className="scroll-mt-16 bg-ledger-800 py-20 text-white lg:py-28">
+          <Container>
+            <div className="grid gap-14 lg:grid-cols-2">
+              <div>
+                <h2 className="display-md text-[2rem] sm:text-[2.6rem]">Ready for NAFDAC's traceability rules</h2>
+                <p className="mt-4 max-w-[52ch] text-[1.05rem] leading-relaxed text-ledger-100">
+                  Under the Pharmaceutical Products (Traceability) Regulations 2024, medicines need a GS1 barcode with a unique serial, and every
+                  move through the supply chain must be reported. Marketing authorisations will depend on it, starting with these dates.
+                </p>
+                <ol className="mt-10 border-l border-ledger-500/60">
+                  {phases.map(p => (
+                    <li key={p.date} className="relative pb-7 pl-6 last:pb-0">
+                      <span className="absolute -left-[5px] top-2 h-2.5 w-2.5 rounded-full bg-ledger-300" aria-hidden="true" />
+                      <p className="tnum font-semibold">{p.date}</p>
+                      <p className="mt-1 text-ledger-100">{p.scope}</p>
+                    </li>
+                  ))}
+                </ol>
+                <p className="mt-8 text-sm text-ledger-200">
+                  Source:{' '}
+                  <a className="underline underline-offset-2 hover:text-white" href="https://pharmanewsonline.com/nafdac-to-enforce-mandatory-pharma-products-traceability-compliance-from-2027/" target="_blank" rel="noreferrer">
+                    Pharmanews, July 2026
+                  </a>. Always confirm current dates with NAFDAC.
+                </p>
+              </div>
+
+              <div className="lg:pt-2">
+                <div className="rounded-xl bg-ledger-900/60 p-6 ring-1 ring-ledger-600/50 sm:p-8">
+                  <h3 className="text-xl font-semibold">What pilot partners get</h3>
+                  <ul className="mt-5 space-y-4">
+                    {pilotIncludes.map(t => (
+                      <li key={t} className="flex gap-3 leading-relaxed text-ledger-50">
+                        <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-ledger-300" aria-hidden="true" />
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-6 border-t border-ledger-600/50 pt-5 leading-relaxed text-ledger-100">
+                    We're building direct reporting to NAFDAC's Traceability Information System with our first partners. Not a pharma company?
+                    Cosmetics, drinks and food brands use the same codes to stop fakes of their products.
+                  </p>
+                  <Link to="/contact?topic=pilot" className="mt-6 inline-block rounded-lg bg-white px-5 py-3 font-semibold text-ledger-800 hover:bg-ledger-50">
+                    Apply for the pilot
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-        </Section>
-      </section>
+          </Container>
+        </section>
+
+        {/* Channels */}
+        <section className="py-20 lg:py-28">
+          <Container>
+            <h2 className="display-md max-w-[24ch] text-[2rem] sm:text-[2.6rem]">Check from any phone, with or without data</h2>
+            <ul className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+              {channels.map(c => (
+                <li key={c.name}>
+                  <c.icon className="h-6 w-6 text-ledger-600" aria-hidden="true" />
+                  <h3 className="mt-4 text-lg font-semibold">{c.name}</h3>
+                  <p className="mt-1.5 leading-relaxed text-muted">{c.text}</p>
+                  <p className={`mt-3 text-sm font-medium ${c.status === 'Available now' ? 'text-genuine' : 'text-faint'}`}>{c.status}</p>
+                </li>
+              ))}
+            </ul>
+          </Container>
+        </section>
+
+        {/* Evidence, with sources */}
+        <section className="border-t border-line py-20 lg:py-28">
+          <Container>
+            <h2 className="display-md text-[2rem] sm:text-[2.6rem]">Why this matters</h2>
+            <dl className="mt-10 divide-y divide-line border-y border-line">
+              {facts.map(f => (
+                <div key={f.figure} className="grid gap-2 py-7 md:grid-cols-[14rem_1fr_auto] md:items-baseline md:gap-8">
+                  <dt className="display tnum text-[2.4rem] text-ledger-700">{f.figure}</dt>
+                  <dd className="max-w-[58ch] text-[1.05rem] leading-relaxed">{f.text}</dd>
+                  <dd className="text-sm">
+                    <a href={f.href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-muted underline-offset-2 hover:text-ink hover:underline">
+                      {f.source} <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                    </a>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </Container>
+        </section>
+
+        {/* Close */}
+        <section className="pb-24">
+          <Container>
+            <div className="flex flex-col gap-8 rounded-2xl bg-mist p-8 sm:p-12 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-[46ch]">
+                <h2 className="display-md text-[1.9rem] sm:text-[2.3rem]">We're choosing our first ten partners</h2>
+                <p className="mt-3 text-[1.05rem] leading-relaxed text-muted">
+                  Manufacturers, importers and brand owners in Nigeria who want to protect their products and get ready for traceability rules.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Link to="/contact?topic=pilot" className="rounded-lg bg-ledger-700 px-5 py-3 font-semibold text-white hover:bg-ledger-800">Apply for the pilot</Link>
+                <Link to="/contact?topic=regulator" className="rounded-lg border border-line bg-paper px-5 py-3 font-semibold hover:border-faint">Regulator access</Link>
+              </div>
+            </div>
+          </Container>
+        </section>
+      </main>
 
       <Footer />
     </div>

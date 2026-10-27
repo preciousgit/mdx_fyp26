@@ -1,233 +1,169 @@
 @import "tailwindcss";
 
-/* ── Color theme: remap indigo → blue, violet → cyan, purple → sky ──────── */
+/* ──────────────────────────────────────────────────────────────────────────
+   TrustChain design tokens
+   Public site: light, clinical, "ledger green" from the Nigerian flag green.
+   Status colours carry meaning: genuine / caution / recalled.
+   ────────────────────────────────────────────────────────────────────────── */
 @theme {
-  --color-indigo-50:  #eff6ff;
-  --color-indigo-100: #dbeafe;
-  --color-indigo-200: #bfdbfe;
-  --color-indigo-300: #93c5fd;
-  --color-indigo-400: #60a5fa;
-  --color-indigo-500: #3b82f6;
-  --color-indigo-600: #2563eb;
-  --color-indigo-700: #1d4ed8;
-  --color-indigo-800: #1e40af;
-  --color-indigo-900: #1e3a8a;
-  --color-indigo-950: #172554;
+  --font-sans: 'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  --color-violet-50:  #ecfeff;
-  --color-violet-100: #cffafe;
-  --color-violet-200: #a5f3fc;
-  --color-violet-300: #67e8f9;
-  --color-violet-400: #22d3ee;
-  --color-violet-500: #06b6d4;
-  --color-violet-600: #0891b2;
-  --color-violet-700: #0e7490;
-  --color-violet-800: #155e75;
-  --color-violet-900: #164e63;
-  --color-violet-950: #083344;
+  --color-ink: #15201B;
+  --color-muted: #55645D;
+  --color-faint: #8A9891;
+  --color-line: #DCE3DF;
+  --color-mist: #F3F6F4;
+  --color-paper: #FFFFFF;
 
-  --color-purple-50:  #f0f9ff;
-  --color-purple-100: #e0f2fe;
-  --color-purple-200: #bae6fd;
-  --color-purple-300: #7dd3fc;
-  --color-purple-400: #38bdf8;
-  --color-purple-500: #0ea5e9;
-  --color-purple-600: #0284c7;
-  --color-purple-700: #0369a1;
-  --color-purple-800: #075985;
-  --color-purple-900: #0c4a6e;
-  --color-purple-950: #082f49;
+  --color-ledger-50: #EEF6F2;
+  --color-ledger-100: #D5EADF;
+  --color-ledger-200: #A9D3BE;
+  --color-ledger-300: #74B697;
+  --color-ledger-400: #3F9670;
+  --color-ledger-500: #1C7A55;
+  --color-ledger-600: #116446;
+  --color-ledger-700: #0E4D3A;
+  --color-ledger-800: #0B3B2D;
+  --color-ledger-900: #082A20;
+
+  --color-genuine: #13804F;
+  --color-genuine-bg: #E7F5EE;
+  --color-caution: #9A5B00;
+  --color-caution-bg: #FFF3DC;
+  --color-recalled: #B42318;
+  --color-recalled-bg: #FDECEA;
+
+  /* Signed-in app (dark shell): the old indigo/violet/purple classes are
+     remapped to the brand greens so every dashboard screen matches. */
+  --color-indigo-50: #ecfdf5;
+  --color-indigo-100: #d1fae5;
+  --color-indigo-200: #a7f3d0;
+  --color-indigo-300: #6ee7b7;
+  --color-indigo-400: #34d399;
+  --color-indigo-500: #10b981;
+  --color-indigo-600: #0e7a55;
+  --color-indigo-700: #0b6146;
+  --color-indigo-800: #0a4d38;
+  --color-indigo-900: #083d2d;
+  --color-indigo-950: #04261c;
+
+  --color-violet-50: #f0fdfa;
+  --color-violet-100: #ccfbf1;
+  --color-violet-200: #99f6e4;
+  --color-violet-300: #5eead4;
+  --color-violet-400: #2dd4bf;
+  --color-violet-500: #14b8a6;
+  --color-violet-600: #0d8a7d;
+  --color-violet-700: #0f766e;
+  --color-violet-800: #115e59;
+  --color-violet-900: #134e4a;
+  --color-violet-950: #042f2e;
+
+  --color-purple-50: #f0fdf4;
+  --color-purple-100: #dcfce7;
+  --color-purple-200: #bbf7d0;
+  --color-purple-300: #86efac;
+  --color-purple-400: #4ade80;
+  --color-purple-500: #22c55e;
+  --color-purple-600: #16a34a;
+  --color-purple-700: #15803d;
+  --color-purple-800: #166534;
+  --color-purple-900: #14532d;
+  --color-purple-950: #052e16;
 }
 
-/* ── Base font ──────────────────────────────────────────────────────────── */
 :root {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  font-feature-settings: 'cv11', 'ss01';
+  font-family: var(--font-sans);
+  font-variation-settings: 'wdth' 100;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color-scheme: dark;
+  color-scheme: light;
+  text-rendering: optimizeLegibility;
 }
 
-/* ── Heading font ───────────────────────────────────────────────────────── */
-h1, h2, h3, h4 {
-  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
-}
-
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
-  background-color: #060B14;
-  color: #f0f4ff;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
   margin: 0;
 }
 
-/* ── Scrollbar ──────────────────────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Headline face: Archivo at a narrower width reads like a printed pack label */
+.display {
+  font-variation-settings: 'wdth' 82;
+  font-weight: 760;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
 }
-
-::-webkit-scrollbar-track {
-  background: transparent;
+.display-md {
+  font-variation-settings: 'wdth' 88;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
 }
-
-::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.3);
-  border-radius: 99px;
+.code-text {
+  font-variant-numeric: tabular-nums;
+  font-variation-settings: 'wdth' 100;
+  font-weight: 600;
+  letter-spacing: 0.06em;
 }
+.tnum { font-variant-numeric: tabular-nums; }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.5);
-}
+html { scroll-behavior: smooth; }
 
-/* ── Selection ──────────────────────────────────────────────────────────── */
-::selection {
-  background: rgba(59, 130, 246, 0.4);
-  color: #fff;
-}
-
-/* ── Smooth scroll ──────────────────────────────────────────────────────── */
-html {
-  scroll-behavior: smooth;
-}
-
-/* ── Focus visible ──────────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid rgba(59, 130, 246, 0.6);
+  outline: 2px solid var(--color-ledger-500);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* ── Animated gradient text utility ───────────────────────────────────── */
-@keyframes gradient-shift {
+::selection { background: var(--color-ledger-200); color: var(--color-ink); }
 
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
+/* One orchestrated motion: the verification result revealing itself */
+@keyframes result-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.result-in { animation: result-in 260ms cubic-bezier(.2,.7,.2,1) both; }
 
-  50% {
-    background-position: 100% 50%;
-  }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 }
 
-.gradient-text-animated {
-  background: linear-gradient(135deg, #3b82f6, #06b6d4, #38bdf8, #3b82f6);
-  background-size: 200% 200%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradient-shift 4s ease infinite;
-}
+/* ── Signed-in app shell (dark) ─────────────────────────────────────────── */
+.app-dark { color-scheme: dark; color: #f0f4ff; }
 
-/* ── Glow pulse ─────────────────────────────────────────────────────────── */
-@keyframes glow-pulse {
+.app-dark ::-webkit-scrollbar { width: 6px; height: 6px; }
+.app-dark ::-webkit-scrollbar-track { background: transparent; }
+.app-dark ::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.3); border-radius: 99px; }
 
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-  }
-
-  50% {
-    box-shadow: 0 0 40px rgba(59, 130, 246, 0.6);
-  }
-}
-
-.glow-pulse {
-  animation: glow-pulse 2s ease-in-out infinite;
-}
-
-/* ── Floating animation ─────────────────────────────────────────────────── */
-@keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-.float {
-  animation: float 4s ease-in-out infinite;
-}
-
-/* ── Shimmer skeleton ───────────────────────────────────────────────────── */
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-.skeleton {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.04) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-/* ── Grid background pattern ────────────────────────────────────────────── */
-.grid-pattern {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
-
-/* ── Noise texture overlay ──────────────────────────────────────────────── */
-.noise::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  border-radius: inherit;
-}
-
-/* ── Input autofill overrides ───────────────────────────────────────────── */
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus {
+.app-dark input:-webkit-autofill,
+.app-dark input:-webkit-autofill:hover,
+.app-dark input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0px 1000px #0D1626 inset !important;
   -webkit-text-fill-color: #f0f4ff !important;
   caret-color: #f0f4ff;
 }
 
-/* ── Line clamp utility ─────────────────────────────────────────────────── */
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+/* Utilities still used by dashboard screens */
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+.skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* ── Review highlight animation ─────────────────────────────────────── */
 @keyframes review-highlight {
-  0% {
-    border-color: rgba(59, 130, 246, 0.8);
-    background-color: rgba(59, 130, 246, 0.15);
-  }
-
-  100% {
-    border-color: rgba(59, 130, 246, 0.2);
-    background-color: rgba(255, 255, 255, 0.02);
-  }
+  0% { border-color: rgba(16, 185, 129, 0.8); background-color: rgba(16, 185, 129, 0.15); }
+  100% { border-color: rgba(16, 185, 129, 0.2); background-color: rgba(255, 255, 255, 0.02); }
 }
+.highlight-review { animation: review-highlight 2s ease-out; }
 
-.highlight-review {
-  animation: review-highlight 2s ease-out;
-}
+/* Kept for any remaining references */
+.gradient-text-animated { color: var(--color-indigo-400); }
+.glow-pulse, .float, .noise::after { animation: none; }
+.grid-pattern { background-image: none; }

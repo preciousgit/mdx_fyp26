@@ -74,7 +74,7 @@ export default function Layout() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#060B14] text-white">
+    <div className="app-dark min-h-screen bg-[#060B14] text-white">
       {/* Top nav */}
       <nav className="fixed top-0 left-0 right-0 z-40 bg-[#08111E]/90 backdrop-blur-xl border-b border-white/6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
