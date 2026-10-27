@@ -302,13 +302,13 @@ function ProducerDashboard() {
 
                 <div>
                   <label className="block text-sm font-medium text-muted mb-1.5">Product name</label>
-                  <input type="text" required value={newProduct.name} onChange={e => setNewProduct({ ...newProduct, name: e.target.value })} placeholder="e.g. Organic Salmon Fillet" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
+                  <input type="text" required value={newProduct.name} onChange={e => setNewProduct({ ...newProduct, name: e.target.value })} placeholder="e.g. Artemether-Lumefantrine 20/120" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-muted mb-1.5">Category</label>
-                    <input type="text" required value={newProduct.category} onChange={e => setNewProduct({ ...newProduct, category: e.target.value })} placeholder="e.g. Seafood" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
+                    <input type="text" required value={newProduct.category} onChange={e => setNewProduct({ ...newProduct, category: e.target.value })} placeholder="e.g. Antimalarial" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-muted mb-1.5">Packaging type</label>
@@ -323,18 +323,18 @@ function ProducerDashboard() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-muted mb-1.5">Weight</label>
-                    <input type="text" value={newProduct.weight} onChange={e => setNewProduct({ ...newProduct, weight: e.target.value })} placeholder="e.g. 2.5kg" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
+                    <input type="text" value={newProduct.weight} onChange={e => setNewProduct({ ...newProduct, weight: e.target.value })} placeholder="e.g. 24 tablets" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-muted mb-1.5">Size / Dimensions</label>
-                    <input type="text" value={newProduct.size} onChange={e => setNewProduct({ ...newProduct, size: e.target.value })} placeholder="e.g. 20×15×5 cm" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
+                    <input type="text" value={newProduct.size} onChange={e => setNewProduct({ ...newProduct, size: e.target.value })} placeholder="e.g. 12×6×2 cm" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-muted mb-1.5">Batch / lot number</label>
-                    <input type="text" value={newProduct.batchNumber} onChange={e => setNewProduct({ ...newProduct, batchNumber: e.target.value })} placeholder="e.g. BATCH-2024-001" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
+                    <input type="text" value={newProduct.batchNumber} onChange={e => setNewProduct({ ...newProduct, batchNumber: e.target.value })} placeholder="e.g. B2026-114" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-muted mb-1.5">Barcode / SKU</label>
@@ -344,7 +344,7 @@ function ProducerDashboard() {
 
                 <div>
                   <label className="block text-sm font-medium text-muted mb-1.5">Country of origin</label>
-                  <input type="text" value={newProduct.origin} onChange={e => setNewProduct({ ...newProduct, origin: e.target.value })} placeholder="e.g. Norway" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
+                  <input type="text" value={newProduct.origin} onChange={e => setNewProduct({ ...newProduct, origin: e.target.value })} placeholder="e.g. Nigeria" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -360,17 +360,17 @@ function ProducerDashboard() {
 
                 <div>
                   <label className="block text-sm font-medium text-muted mb-1.5">Storage conditions</label>
-                  <input type="text" value={newProduct.storageConditions} onChange={e => setNewProduct({ ...newProduct, storageConditions: e.target.value })} placeholder="e.g. Store at 0–4°C, keep dry" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
+                  <input type="text" value={newProduct.storageConditions} onChange={e => setNewProduct({ ...newProduct, storageConditions: e.target.value })} placeholder="e.g. Store below 30°C, keep dry" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-muted mb-1.5">Allergens</label>
-                    <input type="text" value={newProduct.allergens} onChange={e => setNewProduct({ ...newProduct, allergens: e.target.value })} placeholder="e.g. Fish, Gluten" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
+                    <input type="text" value={newProduct.allergens} onChange={e => setNewProduct({ ...newProduct, allergens: e.target.value })} placeholder="e.g. Lactose" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-muted mb-1.5">Certifications</label>
-                    <input type="text" value={newProduct.certifications} onChange={e => setNewProduct({ ...newProduct, certifications: e.target.value })} placeholder="e.g. Organic, ISO 22000" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
+                    <input type="text" value={newProduct.certifications} onChange={e => setNewProduct({ ...newProduct, certifications: e.target.value })} placeholder="e.g. NAFDAC reg. no., WHO-GMP" className="w-full px-4 py-3 bg-paper border border-line rounded-lg text-ink placeholder-faint focus:outline-none focus:border-ledger-500 transition-all text-sm" />
                   </div>
                 </div>
 
