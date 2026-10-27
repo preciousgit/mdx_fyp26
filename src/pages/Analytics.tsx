@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../api';
 import { useAuth } from '../AuthContext';
 import {
-  BarChart2, TrendingUp, AlertTriangle, CheckCircle, Package,
+  TrendingUp, AlertTriangle, CheckCircle, Package,
   ShieldCheck, AlertCircle, Activity, ChevronRight,
 } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -108,9 +108,9 @@ export default function Analytics() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="display-md text-[2rem] sm:text-[2.4rem] text-ink flex items-center gap-2">
-            <BarChart2 className="h-6 w-6 text-ledger-600" /> Supply Chain Analytics
+            Analytics
           </h1>
-          <p className="text-muted text-sm mt-1">Portfolio-level Business Intelligence · live data</p>
+          <p className="text-muted text-sm mt-1">Risk, compliance and movement across every product you can see.</p>
         </div>
         <button onClick={() => {
           setLoading(true);
@@ -123,15 +123,15 @@ export default function Analytics() {
 
       {/* KPI cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <StatCard label="Total Products" value={data.total} icon={Package} />
-        <StatCard label="High Risk" value={data.highRisk} color="text-recalled" icon={AlertTriangle} sub={`${data.total > 0 ? Math.round((data.highRisk / data.total) * 100) : 0}% of portfolio`} />
-        <StatCard label="Compliance Rate" value={`${data.complianceRate}%`} color={data.complianceRate > 80 ? 'text-genuine' : 'text-caution'} icon={CheckCircle} />
-        <StatCard label="Anomalies Detected" value={data.totalAnomalies} color={data.totalAnomalies > 0 ? 'text-caution' : 'text-genuine'} icon={AlertCircle} sub="across all events" />
+        <StatCard label="Products" value={data.total} icon={Package} />
+        <StatCard label="High risk" value={data.highRisk} color="text-recalled" icon={AlertTriangle} sub={`${data.total > 0 ? Math.round((data.highRisk / data.total) * 100) : 0}% of portfolio`} />
+        <StatCard label="Compliance rate" value={`${data.complianceRate}%`} color={data.complianceRate > 80 ? 'text-genuine' : 'text-caution'} icon={CheckCircle} />
+        <StatCard label="Anomalies detected" value={data.totalAnomalies} color={data.totalAnomalies > 0 ? 'text-caution' : 'text-genuine'} icon={AlertCircle} sub="across all events" />
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatCard label="Flagged" value={data.flagged} color="text-recalled" icon={AlertTriangle} />
-        <StatCard label="In Transit" value={data.inTransit} color="text-sky-800" icon={Activity} />
+        <StatCard label="In transit" value={data.inTransit} color="text-sky-800" icon={Activity} />
         <StatCard label="Approved" value={data.approved} color="text-genuine" icon={CheckCircle} />
         <StatCard label="Rejected" value={data.rejected} color="text-muted" icon={ShieldCheck} />
       </div>
@@ -176,7 +176,7 @@ export default function Analytics() {
         <div className="space-y-3">
           {[
             { label: 'Registered', val: data.registered, color: 'bg-genuine', text: 'text-genuine' },
-            { label: 'In Transit', val: data.inTransit, color: 'bg-sky-700', text: 'text-sky-800' },
+            { label: 'In transit', val: data.inTransit, color: 'bg-sky-700', text: 'text-sky-800' },
             { label: 'Flagged', val: data.flagged, color: 'bg-recalled', text: 'text-recalled' },
             { label: 'Approved', val: data.approved, color: 'bg-ledger-300', text: 'text-ledger-500' },
             { label: 'Rejected', val: data.rejected, color: 'bg-faint', text: 'text-muted' },
@@ -207,7 +207,7 @@ export default function Analytics() {
         <div className="bg-paper border border-line rounded-2xl overflow-hidden">
           <div className="px-6 py-4 border-b border-line flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-recalled" />
-            <h3 className="text-ink font-bold text-sm">Top 5 Highest Risk Products</h3>
+            <h3 className="text-ink font-bold text-sm">Highest-risk products</h3>
           </div>
           <ul className="divide-y divide-line">
             {data.topRisk.map((p: any, i: number) => (
@@ -238,7 +238,7 @@ export default function Analytics() {
       {data.categories?.length > 0 && (
         <div className="bg-paper border border-line rounded-2xl overflow-hidden">
           <div className="px-6 py-4 border-b border-line">
-            <h3 className="text-ink font-bold text-sm">Category Risk Breakdown</h3>
+            <h3 className="text-ink font-bold text-sm">Risk by category</h3>
           </div>
           <table className="w-full text-sm">
             <thead>

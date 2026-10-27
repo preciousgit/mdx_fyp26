@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from 'motion/react';
 
 const statusConfig: Record<string, { color: string; icon: React.ElementType; label: string }> = {
   registered: { color: 'text-genuine bg-genuine-bg border-genuine/25', icon: CheckCircle, label: 'Registered' },
-  'in-transit': { color: 'text-sky-800 bg-sky-50 border-sky-200', icon: Clock, label: 'In Transit' },
+  'in-transit': { color: 'text-sky-800 bg-sky-50 border-sky-200', icon: Clock, label: 'In transit' },
   flagged: { color: 'text-recalled bg-recalled-bg border-recalled/25', icon: AlertTriangle, label: 'Flagged' },
   approved: { color: 'text-genuine bg-genuine-bg border-genuine/25', icon: CheckCircle, label: 'Approved' },
   rejected: { color: 'text-recalled bg-recalled-bg border-recalled/25', icon: XCircle, label: 'Rejected' },
@@ -146,7 +146,7 @@ function RiskForecast({ productId }: { productId: string }) {
     <div className="bg-paper border border-line rounded-2xl p-6">
       <div className="flex items-center gap-2 mb-4">
         <Brain className="h-5 w-5 text-ledger-600" />
-        <h2 className="text-ink font-bold text-lg">Predictive Risk Forecast</h2>
+        <h2 className="text-ink font-bold text-lg">Risk forecast</h2>
       </div>
       <div className="flex items-center justify-center py-8">
         <div className="w-6 h-6 border-2 border-ledger-400 border-t-transparent rounded-full animate-spin" />
@@ -166,7 +166,7 @@ function RiskForecast({ productId }: { productId: string }) {
     <div className="bg-paper border border-line rounded-2xl p-6 space-y-5">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-ink font-bold text-lg flex items-center gap-2">
-          <Brain className="h-5 w-5 text-ledger-600" /> Predictive Risk Forecast
+          <Brain className="h-5 w-5 text-ledger-600" /> Risk forecast
         </h2>
         <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${confidenceColor}`}>
           {data.confidence} confidence
@@ -516,11 +516,11 @@ export default function ProductDetails() {
                 { label: 'Packaging', val: product.packagingType || 'N/A' },
                 { label: 'Weight', val: product.weight || 'N/A' },
                 { label: 'Size', val: product.size || 'N/A' },
-                ...(product.batchNumber ? [{ label: 'Batch / Lot', val: product.batchNumber }] : []),
+                ...(product.batchNumber ? [{ label: 'Batch / lot', val: product.batchNumber }] : []),
                 ...(product.barcode ? [{ label: 'Barcode / SKU', val: product.barcode }] : []),
                 ...(product.origin ? [{ label: 'Origin', val: product.origin, full: true }] : []),
                 ...(product.manufacturingDate ? [{ label: 'Manufactured', val: product.manufacturingDate }] : []),
-                ...(product.expiryDate ? [{ label: 'Expiry / Best Before', val: product.expiryDate }] : []),
+                ...(product.expiryDate ? [{ label: 'Expiry / best before', val: product.expiryDate }] : []),
                 ...(product.storageConditions ? [{ label: 'Storage', val: product.storageConditions, full: true }] : []),
                 ...(product.allergens ? [{ label: 'Allergens', val: product.allergens, full: true }] : []),
                 ...(product.certifications ? [{ label: 'Certifications', val: product.certifications, full: true }] : []),
@@ -543,7 +543,7 @@ export default function ProductDetails() {
       {/* Audit trail */}
       <div className="bg-paper border border-line rounded-2xl p-6">
         <h2 className="text-ink font-bold text-lg flex items-center gap-2 mb-6">
-          <LinkIcon className="h-5 w-5 text-ledger-600" /> Immutable Audit Trail
+          <LinkIcon className="h-5 w-5 text-ledger-600" /> Audit trail
           <span className="ml-auto text-faint text-xs font-normal">{events.length} event{events.length !== 1 ? 's' : ''}</span>
         </h2>
 
@@ -626,7 +626,7 @@ export default function ProductDetails() {
 
         {user && (
           <form onSubmit={handleSubmitReview} className="mb-8 p-5 bg-paper border border-line rounded-2xl space-y-4">
-            <h3 className="text-ink font-semibold text-sm">Leave a Review</h3>
+            <h3 className="text-ink font-semibold text-sm">Leave a review</h3>
             <div className="flex items-center gap-2">
               <span className="text-muted text-sm">Rating:</span>
               {[1, 2, 3, 4, 5].map(s => (

@@ -99,14 +99,14 @@ export default function Profile() {
   };
 
   const fields = [
-    { label: 'Full Name', key: 'name', editable: true, value: formData.name, onChange: (v: string) => setFormData({ ...formData, name: v }) },
-    { label: 'Phone Number', key: 'phoneNumber', editable: true, value: formData.phoneNumber, onChange: (v: string) => setFormData({ ...formData, phoneNumber: v }), placeholder: 'Not provided' },
+    { label: 'Full name', key: 'name', editable: true, value: formData.name, onChange: (v: string) => setFormData({ ...formData, name: v }) },
+    { label: 'Phone number', key: 'phoneNumber', editable: true, value: formData.phoneNumber, onChange: (v: string) => setFormData({ ...formData, phoneNumber: v }), placeholder: 'Not provided' },
     ...(profile.role === 'producer' || profile.role === 'distributor'
-      ? [{ label: 'Company Name', key: 'companyName', editable: true, value: formData.companyName, onChange: (v: string) => setFormData({ ...formData, companyName: v }), placeholder: '' }]
+      ? [{ label: 'Company name', key: 'companyName', editable: true, value: formData.companyName, onChange: (v: string) => setFormData({ ...formData, companyName: v }), placeholder: '' }]
       : []),
-    ...(profile.companyPrefix ? [{ label: 'Company Prefix', key: 'companyPrefix', editable: false, value: profile.companyPrefix, onChange: () => { } }] : []),
+    ...(profile.companyPrefix ? [{ label: 'Company prefix', key: 'companyPrefix', editable: false, value: profile.companyPrefix, onChange: () => { } }] : []),
     {
-      label: 'Address / Location',
+      label: 'Address',
       key: 'address',
       editable: true,
       value: formData.address,
@@ -182,7 +182,7 @@ export default function Profile() {
       <div className="bg-paper border border-line rounded-2xl overflow-hidden">
         <div className="px-6 py-4 border-b border-line flex items-center gap-2">
           <User className="h-4 w-4 text-ledger-600" />
-          <h2 className="text-ink font-semibold text-sm">Profile Information</h2>
+          <h2 className="text-ink font-semibold text-sm">Your details</h2>
         </div>
         <div className="divide-y divide-line">
           <div className="px-6 py-4 flex items-center justify-between">
@@ -212,11 +212,11 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Crypto Wallet section */}
+      {/* Wallet section */}
       <div className="bg-paper border border-line rounded-2xl overflow-hidden">
         <div className="px-6 py-4 border-b border-line flex items-center gap-2">
           <Wallet className="h-4 w-4 text-ledger-600" />
-          <h2 className="text-ink font-semibold text-sm">Crypto Wallet</h2>
+          <h2 className="text-ink font-semibold text-sm">Wallet</h2>
           <span className="ml-auto text-faint text-xs">Sepolia Testnet · {FEE_ETH} ETH per action</span>
         </div>
 
@@ -285,7 +285,7 @@ export default function Profile() {
       <div className="bg-paper border border-line rounded-2xl overflow-hidden">
         <div className="px-6 py-4 border-b border-line flex items-center gap-2">
           <Shield className="h-4 w-4 text-ledger-600" />
-          <h2 className="text-ink font-semibold text-sm">Security & Verification</h2>
+          <h2 className="text-ink font-semibold text-sm">Security and verification</h2>
         </div>
 
         <div className="divide-y divide-line">
