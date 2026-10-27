@@ -15,10 +15,10 @@ import Layout from './components/Layout';
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode; allowedRoles?: string[] }) => {
   const { user, profile, loading } = useAuth();
   if (loading) return (
-    <div className="app-dark min-h-screen bg-[#060B14] flex items-center justify-center">
+    <div className="min-h-screen bg-mist flex items-center justify-center" role="status">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-slate-500 text-sm">Loading…</p>
+        <div className="w-8 h-8 border-2 border-ledger-600 border-t-transparent rounded-full animate-spin" />
+        <p className="text-muted text-sm">Loading your workspace…</p>
       </div>
     </div>
   );

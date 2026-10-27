@@ -33,8 +33,7 @@
   --color-recalled: #B42318;
   --color-recalled-bg: #FDECEA;
 
-  /* Signed-in app (dark shell): the old indigo/violet/purple classes are
-     remapped to the brand greens so every dashboard screen matches. */
+  /* Legacy indigo/violet/purple classes are remapped to greens as a safety net. */
   --color-indigo-50: #ecfdf5;
   --color-indigo-100: #d1fae5;
   --color-indigo-200: #a7f3d0;
@@ -132,25 +131,10 @@ html { scroll-behavior: smooth; }
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 }
 
-/* ── Signed-in app shell (dark) ─────────────────────────────────────────── */
-.app-dark { color-scheme: dark; color: #f0f4ff; }
-
-.app-dark ::-webkit-scrollbar { width: 6px; height: 6px; }
-.app-dark ::-webkit-scrollbar-track { background: transparent; }
-.app-dark ::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.3); border-radius: 99px; }
-
-.app-dark input:-webkit-autofill,
-.app-dark input:-webkit-autofill:hover,
-.app-dark input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0px 1000px #0D1626 inset !important;
-  -webkit-text-fill-color: #f0f4ff !important;
-  caret-color: #f0f4ff;
-}
-
 /* Utilities still used by dashboard screens */
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 .skeleton {
-  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background: linear-gradient(90deg, #F3F6F4 25%, #E6ECE8 50%, #F3F6F4 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -158,8 +142,8 @@ html { scroll-behavior: smooth; }
 .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
 @keyframes review-highlight {
-  0% { border-color: rgba(16, 185, 129, 0.8); background-color: rgba(16, 185, 129, 0.15); }
-  100% { border-color: rgba(16, 185, 129, 0.2); background-color: rgba(255, 255, 255, 0.02); }
+  0% { border-color: #1C7A55; background-color: #EEF6F2; }
+  100% { border-color: #DCE3DF; background-color: #FFFFFF; }
 }
 .highlight-review { animation: review-highlight 2s ease-out; }
 
