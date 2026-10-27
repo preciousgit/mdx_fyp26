@@ -1,155 +1,166 @@
-import React, { useState } from 'react';
-import { motion } from 'motion/react';
-import { Mail, MessageSquare, Send, MapPin, Phone, CheckCircle } from 'lucide-react';
+import React, { useId, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { CheckCircle2 } from 'lucide-react';
 import { api } from '../api';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { Container } from '../components/brand';
 
-const contactInfo = [
-  { icon: Mail, label: 'Email', value: 'hello@trustchain.io', href: 'mailto:hello@trustchain.io' },
-  { icon: Phone, label: 'Phone', value: '+1 (555) 012-3456', href: 'tel:+15550123456' },
-  { icon: MapPin, label: 'Location', value: 'London, UK · San Francisco, CA', href: '#' },
-];
+type Topic = 'pilot' | 'regulator' | 'report' | 'general';
 
-const faqs = [
-  { q: 'How does TrustChain create product IDs?', a: 'Each product gets a unique ID based on your company prefix plus a random 5-digit code. This ID is immutably linked to all events in the product\'s lifecycle.' },
-  { q: 'Can consumers verify products without an account?', a: 'Yes. The Consumer Portal at /verify is fully public. Anyone can enter a product ID to view its complete audit trail, status, and reviews.' },
-  { q: 'Is data stored on a real blockchain?', a: 'TrustChain uses a blockchain-style hash chain — each event references the SHA256 hash of the previous one, making the ledger tamper-evident without full blockchain infrastructure.' },
-];
+const topics: Record<Topic, { label: string; heading: string; intro: string; subject: string }> = {
+  pilot: {
+    label: 'Join the pilot',
+    heading: 'Apply for the pilot',
+    intro: 'Tell us what you make or import and roughly how many packs a month. We’ll come back within two working days to arrange a call.',
+    subject: 'Pilot application',
+  },
+  regulator: {
+    label: 'Regulator access',
+    heading: 'Request regulator access',
+    intro: 'Regulator accounts can see every company’s records and order recalls, so we verify each one before it is created. Use your official email address.',
+    subject: 'Regulator access request',
+  },
+  report: {
+    label: 'Report a product',
+    heading: 'Report a suspicious product',
+    intro: 'Tell us the code and where you bought it. We share reports with the brand and the regulator. If you’ve had a bad reaction to a medicine, see a health worker first.',
+    subject: 'Suspicious product report',
+  },
+  general: {
+    label: 'Something else',
+    heading: 'Contact us',
+    intro: 'Questions about TrustChain, partnerships or press. We reply within two working days.',
+    subject: 'General enquiry',
+  },
+};
+
+const field = 'w-full rounded-lg border border-line bg-paper px-3.5 py-3 text-[0.98rem] placeholder:text-faint focus:border-ledger-500 focus:outline-none';
 
 export default function Contact() {
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [params, setParams] = useSearchParams();
+  const topic = (Object.keys(topics).includes(params.get('topic') || '') ? params.get('topic') : 'general') as Topic;
+  const t = topics[topic];
+  const ids = { name: useId(), email: useId(), org: useId(), code: useId(), where: useId(), msg: useId() };
+
+  const [form, setForm] = useState({ name: '', email: '', org: '', code: params.get('product') || '', where: '', message: '' });
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm(f => ({ ...f, [k]: e.target.value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    const lines = [
+      form.org && `Organisation: ${form.org}`,
+      topic === 'report' && form.code && `Product code: ${form.code}`,
+      topic === 'report' && form.where && `Bought at: ${form.where}`,
+      form.message,
+    ].filter(Boolean);
     try {
       setLoading(true);
-      await api.contact(form);
+      await api.contact({ name: form.name, email: form.email, subject: t.subject, message: lines.join('\n\n') });
       setSent(true);
     } catch (err: any) {
-      setError(err.message || 'Failed to send message.');
+      setError(err.message || 'Your message didn’t send. Check your connection and try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#060B14] text-white">
+    <div className="flex min-h-screen flex-col bg-paper text-ink">
       <Navbar />
+      <main className="flex-1">
+        <Container className="grid gap-12 py-12 lg:grid-cols-[1fr_1.3fr] lg:gap-20 lg:py-20">
+          <div>
+            <h1 className="display text-[2.6rem] sm:text-[3.2rem]">{t.heading}</h1>
+            <p className="mt-4 max-w-[44ch] text-[1.05rem] leading-relaxed text-muted">{t.intro}</p>
 
-      {/* Hero */}
-      <section className="relative pt-36 pb-20 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.12)_0%,transparent_60%)]" />
-        <div className="relative max-w-3xl mx-auto text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm font-medium mb-6">
-            <MessageSquare className="h-4 w-4" /> Get in touch
-          </motion.div>
-          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-5xl sm:text-6xl font-black mb-4">
-            We'd Love to <span className="bg-linear-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Hear from You</span>
-          </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-slate-400 text-lg">
-            Whether you have a question, feedback, or want to explore an enterprise plan — our team responds within 24 hours.
-          </motion.p>
-        </div>
-      </section>
-
-      {/* Main content */}
-      <section className="pb-24 px-4 max-w-6xl mx-auto">
-        <div className="grid lg:grid-cols-5 gap-8">
-          {/* Left – info + FAQ */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Contact cards */}
-            {contactInfo.map(({ icon: Icon, label, value, href }, i) => (
-              <motion.a
-                key={label}
-                href={href}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1 + 0.3 }}
-                className="flex items-center gap-4 p-5 bg-white/3 border border-white/6 rounded-2xl hover:border-indigo-500/30 transition-all duration-300 group"
-              >
-                <div className="w-10 h-10 rounded-xl bg-linear-to-br from-indigo-600/20 to-violet-600/20 border border-indigo-500/20 flex items-center justify-center shrink-0 group-hover:border-indigo-500/40 transition-colors">
-                  <Icon className="h-5 w-5 text-indigo-400" />
-                </div>
-                <div>
-                  <p className="text-slate-500 text-xs uppercase tracking-widest mb-0.5">{label}</p>
-                  <p className="text-white text-sm font-medium">{value}</p>
-                </div>
-              </motion.a>
-            ))}
-
-            {/* FAQ */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="mt-6">
-              <h3 className="text-white font-bold text-lg mb-4">Common Questions</h3>
-              <div className="space-y-4">
-                {faqs.map(({ q, a }) => (
-                  <div key={q} className="p-5 bg-white/2 border border-white/5 rounded-xl">
-                    <p className="text-slate-200 font-medium text-sm mb-2">{q}</p>
-                    <p className="text-slate-500 text-sm leading-relaxed">{a}</p>
-                  </div>
+            <nav aria-label="What is this about?" className="mt-10">
+              <p className="text-sm font-medium">What is this about?</p>
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {(Object.keys(topics) as Topic[]).map(k => (
+                  <li key={k}>
+                    <button
+                      onClick={() => { setParams({ topic: k }); setSent(false); }}
+                      aria-current={k === topic ? 'true' : undefined}
+                      className={`rounded-full border px-3.5 py-1.5 text-sm transition-colors ${k === topic ? 'border-ledger-600 bg-ledger-50 text-ledger-800' : 'border-line text-muted hover:text-ink'}`}
+                    >
+                      {topics[k].label}
+                    </button>
+                  </li>
                 ))}
-              </div>
-            </motion.div>
+              </ul>
+            </nav>
+
+            {topic === 'report' && (
+              <p className="mt-10 border-l-2 border-caution pl-4 text-[0.95rem] leading-relaxed text-muted">
+                You can also report directly to NAFDAC through its <a href="https://www.nafdac.gov.ng/" target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-ink">website</a>.
+                Keep the pack and receipt.
+              </p>
+            )}
           </div>
 
-          {/* Right – form */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-            className="lg:col-span-3"
-          >
-            <div className="bg-white/[0.03] border border-white/6 rounded-2xl p-8">
-              {sent ? (
-                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center py-16 text-center">
-                  <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mb-4">
-                    <CheckCircle className="h-8 w-8 text-emerald-400" />
+          <div>
+            {sent ? (
+              <div className="result-in rounded-2xl border border-genuine/30 bg-genuine-bg p-8" role="status">
+                <CheckCircle2 className="h-7 w-7 text-genuine" aria-hidden="true" />
+                <h2 className="display-md mt-4 text-[1.7rem]">Message sent</h2>
+                <p className="mt-2 leading-relaxed">Thanks, {form.name.split(' ')[0] || 'there'}. We’ll reply to {form.email} within two working days.</p>
+                <Link to="/" className="mt-6 inline-block font-semibold text-ledger-700 hover:underline">Back to home</Link>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-line p-6 sm:p-8">
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor={ids.name} className="mb-1.5 block text-sm font-medium">Your name</label>
+                    <input id={ids.name} required autoComplete="name" value={form.name} onChange={set('name')} className={field} />
                   </div>
-                  <h3 className="text-white font-bold text-xl mb-2">Message Sent!</h3>
-                  <p className="text-slate-400">We'll get back to you within 24 hours. Check your inbox for a confirmation.</p>
-                </motion.div>
-              ) : (
-                <>
-                  <h2 className="text-white font-bold text-2xl mb-6">Send us a message</h2>
-                  <form onSubmit={handleSubmit} className="space-y-5">
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-slate-400 mb-1.5">Full Name</label>
-                        <input type="text" required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Jane Doe" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-slate-400 mb-1.5">Email Address</label>
-                        <input type="email" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="you@example.com" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all text-sm" />
-                      </div>
+                  <div>
+                    <label htmlFor={ids.email} className="mb-1.5 block text-sm font-medium">Email address</label>
+                    <input id={ids.email} type="email" required autoComplete="email" value={form.email} onChange={set('email')} className={field} />
+                  </div>
+                </div>
+
+                {(topic === 'pilot' || topic === 'regulator') && (
+                  <div>
+                    <label htmlFor={ids.org} className="mb-1.5 block text-sm font-medium">{topic === 'pilot' ? 'Company' : 'Agency and office'}</label>
+                    <input id={ids.org} required autoComplete="organization" value={form.org} onChange={set('org')} className={field} />
+                  </div>
+                )}
+
+                {topic === 'report' && (
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor={ids.code} className="mb-1.5 block text-sm font-medium">Code on the pack</label>
+                      <input id={ids.code} value={form.code} onChange={set('code')} className={`${field} code-text`} />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-400 mb-1.5">Subject</label>
-                      <input type="text" required value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })} placeholder="How can we help?" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all text-sm" />
+                      <label htmlFor={ids.where} className="mb-1.5 block text-sm font-medium">Where you bought it</label>
+                      <input id={ids.where} required value={form.where} onChange={set('where')} placeholder="Shop name, market, town" className={field} />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-400 mb-1.5">Message</label>
-                      <textarea required rows={6} value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} placeholder="Tell us more about your needs…" className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all text-sm resize-none" />
-                    </div>
+                  </div>
+                )}
 
-                    {error && (
-                      <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">{error}</div>
-                    )}
+                <div>
+                  <label htmlFor={ids.msg} className="mb-1.5 block text-sm font-medium">
+                    {topic === 'pilot' ? 'What do you make, and how many packs a month?' : topic === 'report' ? 'What made you suspicious?' : 'Message'}
+                  </label>
+                  <textarea id={ids.msg} required rows={6} value={form.message} onChange={set('message')} className={`${field} resize-y`} />
+                </div>
 
-                    <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)]">
-                      {loading ? <span className="animate-pulse">Sending…</span> : <><Send className="h-4 w-4" /> Send Message</>}
-                    </button>
-                  </form>
-                </>
-              )}
-            </div>
-          </motion.div>
-        </div>
-      </section>
+                {error && <p role="alert" className="rounded-lg bg-recalled-bg px-3.5 py-3 text-sm text-recalled">{error}</p>}
 
+                <button type="submit" disabled={loading} className="rounded-lg bg-ledger-700 px-6 py-3 font-semibold text-white hover:bg-ledger-800 disabled:opacity-60">
+                  {loading ? 'Sending…' : 'Send message'}
+                </button>
+              </form>
+            )}
+          </div>
+        </Container>
+      </main>
       <Footer />
     </div>
   );

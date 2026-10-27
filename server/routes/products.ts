@@ -19,6 +19,16 @@ function toProductResponse(doc: any) {
     riskScore: doc.riskScore,
     images: doc.images || [],
     video: doc.video || '',
+    batchNumber: doc.batchNumber || '',
+    barcode: doc.barcode || '',
+    origin: doc.origin || '',
+    manufacturingDate: doc.manufacturingDate || '',
+    expiryDate: doc.expiryDate || '',
+    storageConditions: doc.storageConditions || '',
+    allergens: doc.allergens || '',
+    certifications: doc.certifications || '',
+    reviewScore: doc.reviewScore || 0,
+    reviewCount: doc.reviewCount || 0,
     createdAt: doc.createdAt,
   };
 }
@@ -56,7 +66,10 @@ router.get('/:id', async (req, res: Response) => {
 // POST /api/products
 router.post('/', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
-    const { id, producerId, producerName, name, description, category, packagingType, weight, size, images, video } = req.body;
+    const {
+      id, producerId, producerName, name, description, category, packagingType, weight, size, images, video,
+      batchNumber, barcode, origin, manufacturingDate, expiryDate, storageConditions, allergens, certifications,
+    } = req.body;
     const product = await Product.create({
       _id: id,
       producerId,
@@ -71,6 +84,8 @@ router.post('/', requireAuth, async (req: AuthRequest, res: Response) => {
       riskScore: 0,
       images: images || [],
       video: video || '',
+      // Previously dropped: needed for batch recalls and the public verify page
+      batchNumber, barcode, origin, manufacturingDate, expiryDate, storageConditions, allergens, certifications,
     });
     res.json(toProductResponse(product));
   } catch (error: any) {
