@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { api } from '../api';
-import { LayoutDashboard, PackageSearch, User, LogOut, Bell, ShieldCheck, X, BarChart2, Wallet, Unlink } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { LogOut, Bell, X, Wallet, Unlink } from 'lucide-react';
+import { Logo, Container } from './brand';
 import { format } from 'date-fns';
 import { connectWallet, getConnectedAccount } from '../utils/wallet';
 
@@ -67,177 +67,167 @@ export default function Layout() {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   const navItems = [
-    { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { label: 'Analytics', href: '/analytics', icon: BarChart2, roles: ['regulator', 'producer'] },
-    { label: 'Verify', href: '/verify', icon: PackageSearch },
-    { label: 'Profile', href: '/profile', icon: User },
+    { label: 'Overview', href: '/dashboard' },
+    { label: 'Analytics', href: '/analytics', roles: ['regulator', 'producer'] },
+    { label: 'Check a product', href: '/verify' },
+    { label: 'Profile', href: '/profile' },
   ];
+  const visibleNav = navItems.filter(item => !item.roles || (profile?.role && item.roles.includes(profile.role)));
+  const roleLabel = ({ producer: 'Manufacturer', distributor: 'Distributor', regulator: 'Regulator', consumer: 'Consumer' } as Record<string, string>)[profile?.role || ''] || '';
 
   return (
-    <div className="app-dark min-h-screen bg-[#060B14] text-white">
-      {/* Top nav */}
-      <nav className="fixed top-0 left-0 right-0 z-40 bg-[#08111E]/90 backdrop-blur-xl border-b border-white/6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="relative">
-                <div className="absolute inset-0 bg-indigo-500 rounded-xl blur-md opacity-40 group-hover:opacity-70 transition-opacity" />
-                <div className="relative bg-linear-to-br from-indigo-500 to-violet-600 p-1.5 rounded-xl">
-                  <ShieldCheck className="h-5 w-5 text-white" />
-                </div>
-              </div>
-              <span className="text-white font-bold text-lg tracking-tight hidden sm:block">
-                Trust<span className="text-indigo-400">Chain</span>
-              </span>
-            </Link>
-
-            {/* Nav links */}
-            <div className="flex items-center gap-1">
-              {navItems.filter(item => !item.roles || (profile?.role && item.roles.includes(profile.role))).map(({ label, href, icon: Icon }) => {
+    <div className="flex min-h-screen flex-col bg-mist text-ink">
+      <header className="sticky top-0 z-40 border-b border-line bg-paper/95 backdrop-blur">
+        <Container className="flex h-16 items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-8">
+            <Logo />
+            <nav aria-label="Workspace" className="hidden md:flex items-center gap-1 text-[0.95rem]">
+              {visibleNav.map(({ label, href }) => {
                 const active = location.pathname === href;
                 return (
                   <Link
                     key={href}
                     to={href}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                      active
-                        ? 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/20'
-                        : 'text-slate-400 hover:text-white hover:bg-white/5'
-                    }`}
+                    aria-current={active ? 'page' : undefined}
+                    className={`rounded-lg px-3 py-2 transition-colors ${active ? 'bg-ledger-50 font-semibold text-ledger-800' : 'text-muted hover:text-ink hover:bg-mist'}`}
                   >
-                    <Icon className="h-4 w-4" />
-                    <span className="hidden sm:block">{label}</span>
+                    {label}
                   </Link>
                 );
               })}
-            </div>
-
-            {/* Right side */}
-            <div className="flex items-center gap-2 relative">
-              {/* Notification bell */}
-              <button
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all"
-              >
-                <Bell className={`h-5 w-5 transition-colors ${unreadCount > 0 ? 'text-white' : ''}`} />
-                <AnimatePresence>
-                  {unreadCount > 0 && (
-                    <motion.span
-                      initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
-                      className="absolute top-0.5 right-0.5 w-4 h-4 bg-indigo-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center shadow-[0_0_6px_rgba(59,130,246,0.8)]"
-                    >
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </button>
-
-              {/* User badge */}
-              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/3 border border-white/6 rounded-xl">
-                {profile?.avatar ? (
-                  <img src={profile.avatar} alt={profile.name} className="w-6 h-6 rounded-full object-cover" />
-                ) : (
-                  <div className="w-6 h-6 rounded-full bg-linear-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white">
-                    {profile?.name?.[0]?.toUpperCase()}
-                  </div>
-                )}
-                <div className="text-right">
-                  <p className="text-white text-xs font-semibold leading-none">{profile?.name}</p>
-                  <p className="text-indigo-400 text-[10px] capitalize leading-none mt-0.5">{profile?.role}</p>
-                </div>
-              </div>
-
-              {/* Wallet button */}
-              {walletAccount ? (
-                <button
-                  onClick={handleDisconnectWallet}
-                  title={`Connected: ${walletAccount}`}
-                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-red-500/10 border border-emerald-500/20 hover:border-red-500/20 text-emerald-400 hover:text-red-400 text-xs font-semibold rounded-xl transition-all group"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 group-hover:bg-red-400 transition-colors" />
-                  <span className="font-mono">{walletAccount.slice(0, 6)}…{walletAccount.slice(-4)}</span>
-                  <Unlink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </button>
-              ) : (
-                <button
-                  onClick={handleConnectWallet}
-                  disabled={walletLoading}
-                  title="Connect MetaMask"
-                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-indigo-500/10 border border-white/10 hover:border-indigo-500/20 text-slate-400 hover:text-indigo-400 text-xs font-semibold rounded-xl transition-all disabled:opacity-50"
-                >
-                  <Wallet className="h-3.5 w-3.5" />
-                  {walletLoading ? 'Connecting…' : 'Connect'}
-                </button>
-              )}
-
-              {/* Sign out — red */}
-              <button onClick={handleLogout} className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/30 text-red-400 hover:text-red-300 text-xs font-semibold rounded-xl transition-all" title="Sign out">
-                <LogOut className="h-3.5 w-3.5" />
-                <span className="hidden sm:block">Sign out</span>
-              </button>
-            </div>
+            </nav>
           </div>
-        </div>
-      </nav>
 
-      {/* Notification drawer */}
-      <AnimatePresence>
-        {showNotifications && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-30" onClick={() => setShowNotifications(false)} />
-            <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.97 }}
-              transition={{ duration: 0.2 }}
-              className="fixed top-20 right-4 z-40 w-80 bg-[#0D1626] border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+          <div className="relative flex items-center gap-2">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              aria-label={unreadCount ? `Notifications, ${unreadCount} unread` : 'Notifications'}
+              className="relative rounded-lg p-2 text-muted hover:bg-mist hover:text-ink transition-colors"
             >
-              <div className="px-4 py-3 border-b border-white/6 flex items-center justify-between">
-                <h3 className="text-white font-semibold text-sm">Notifications</h3>
-                <button onClick={() => setShowNotifications(false)} className="text-slate-500 hover:text-white transition-colors"><X className="h-4 w-4" /></button>
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-recalled px-1 text-[10px] font-bold text-white tnum">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+
+            {walletAccount ? (
+              <button
+                onClick={handleDisconnectWallet}
+                title={`Wallet ${walletAccount} — click to disconnect`}
+                className="hidden sm:flex items-center gap-1.5 rounded-lg border border-line px-3 py-2 text-xs font-medium text-ink hover:border-recalled/40 hover:text-recalled transition-colors group"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-genuine group-hover:bg-recalled" />
+                <span className="code-text">{walletAccount.slice(0, 6)}…{walletAccount.slice(-4)}</span>
+                <Unlink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+            ) : (
+              <button
+                onClick={handleConnectWallet}
+                disabled={walletLoading}
+                className="hidden sm:flex items-center gap-1.5 rounded-lg border border-line px-3 py-2 text-xs font-medium text-muted hover:text-ink hover:border-ledger-300 transition-colors disabled:opacity-50"
+              >
+                <Wallet className="h-3.5 w-3.5" />
+                {walletLoading ? 'Connecting…' : 'Connect wallet'}
+              </button>
+            )}
+
+            <div className="hidden lg:flex items-center gap-2.5 border-l border-line pl-3 ml-1">
+              {profile?.avatar ? (
+                <img src={profile.avatar} alt="" className="h-8 w-8 rounded-full object-cover" />
+              ) : (
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ledger-100 text-sm font-semibold text-ledger-800" aria-hidden="true">
+                  {profile?.name?.[0]?.toUpperCase()}
+                </div>
+              )}
+              <div className="leading-tight">
+                <p className="text-sm font-semibold text-ink">{profile?.name}</p>
+                <p className="text-xs text-muted">{roleLabel}</p>
               </div>
-              <div className="max-h-96 overflow-y-auto divide-y divide-white/4">
-                {notifications.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-slate-600 text-sm">No notifications yet</div>
-                ) : (
-                  notifications.map(n => {
-                    const dotColor = n.type === 'REVIEW' ? 'bg-amber-400' : n.type === 'RISK_ALERT' ? 'bg-red-400' : n.type === 'COMPLIANCE' ? 'bg-emerald-400' : n.type === 'SETUP_DONE' ? 'bg-emerald-400' : 'bg-indigo-400';
-                    return (
-                      <div
-                        key={n.id}
-                        onClick={() => { markAsRead(n.id); if (n.link) { setShowNotifications(false); navigate(n.link); } }}
-                        className={`px-4 py-3 cursor-pointer hover:bg-white/2 transition-colors ${!n.read ? 'bg-indigo-500/5' : ''}`}
-                      >
-                        <div className="flex items-start gap-2">
-                          <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${!n.read ? dotColor : 'bg-transparent'}`} />
-                          <div className="flex-1 min-w-0">
-                            <p className={`text-xs font-semibold ${!n.read ? 'text-white' : 'text-slate-400'}`}>{n.title}</p>
-                            <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">{n.message}</p>
-                            <p className="text-slate-700 text-[10px] mt-1">{n.timestamp ? format(new Date(n.timestamp), 'PP · p') : ''}</p>
-                          </div>
+            </div>
+
+            <button onClick={handleLogout} className="rounded-lg px-3 py-2 text-sm font-medium text-muted hover:bg-mist hover:text-ink transition-colors" title="Sign out">
+              <span className="hidden sm:inline">Sign out</span>
+              <LogOut className="h-4 w-4 sm:hidden" />
+            </button>
+          </div>
+        </Container>
+
+        {/* Phone: workspace links as a scrollable row */}
+        <nav aria-label="Workspace" className="md:hidden border-t border-line">
+          <Container className="flex gap-1 overflow-x-auto py-2 text-sm">
+            {visibleNav.map(({ label, href }) => {
+              const active = location.pathname === href;
+              return (
+                <Link key={href} to={href} aria-current={active ? 'page' : undefined}
+                  className={`shrink-0 rounded-lg px-3 py-1.5 ${active ? 'bg-ledger-50 font-semibold text-ledger-800' : 'text-muted'}`}>
+                  {label}
+                </Link>
+              );
+            })}
+          </Container>
+        </nav>
+      </header>
+
+      {showNotifications && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)} />
+          <div className="result-in fixed top-20 right-4 z-50 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_12px_40px_-12px_rgba(21,32,27,0.25)]" role="dialog" aria-label="Notifications">
+            <div className="flex items-center justify-between border-b border-line px-4 py-3">
+              <h2 className="text-sm font-semibold">Notifications</h2>
+              <button onClick={() => setShowNotifications(false)} aria-label="Close" className="rounded p-1 text-muted hover:text-ink"><X className="h-4 w-4" /></button>
+            </div>
+            <div className="max-h-96 divide-y divide-line overflow-y-auto">
+              {notifications.length === 0 ? (
+                <p className="px-4 py-10 text-center text-sm text-muted">No notifications yet</p>
+              ) : (
+                notifications.map(n => {
+                  const dot = n.type === 'REVIEW' ? 'bg-caution' : n.type === 'RISK_ALERT' ? 'bg-recalled' : 'bg-genuine';
+                  return (
+                    <button
+                      key={n.id}
+                      onClick={() => { markAsRead(n.id); if (n.link) { setShowNotifications(false); navigate(n.link); } }}
+                      className={`block w-full px-4 py-3 text-left hover:bg-mist transition-colors ${!n.read ? 'bg-ledger-50/60' : ''}`}
+                    >
+                      <div className="flex items-start gap-2.5">
+                        <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${!n.read ? dot : 'bg-transparent'}`} />
+                        <div className="min-w-0 flex-1">
+                          <p className={`text-sm ${!n.read ? 'font-semibold text-ink' : 'text-muted'}`}>{n.title}</p>
+                          <p className="mt-0.5 text-sm leading-snug text-muted">{n.message}</p>
+                          <p className="mt-1 text-xs text-faint">{n.timestamp ? format(new Date(n.timestamp), 'PP · p') : ''}</p>
                         </div>
                       </div>
-                    );
-                  })
-                )}
-              </div>
-              {notifications.length > 0 && unreadCount > 0 && (
-                <div className="px-4 py-2.5 border-t border-white/6">
-                  <button onClick={() => { notifications.forEach(n => { if (!n.read) markAsRead(n.id); }); }} className="text-indigo-400 hover:text-indigo-300 text-xs transition-colors">Mark all as read</button>
-                </div>
+                    </button>
+                  );
+                })
               )}
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+            </div>
+            {unreadCount > 0 && (
+              <div className="border-t border-line px-4 py-2.5">
+                <button onClick={() => { notifications.forEach(n => { if (!n.read) markAsRead(n.id); }); }} className="text-sm font-medium text-ledger-700 hover:underline">Mark all as read</button>
+              </div>
+            )}
+          </div>
+        </>
+      )}
 
-      {/* Page content */}
-      <main className="pt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1">
+        <Container className="py-8 sm:py-10">
           <Outlet />
-        </div>
+        </Container>
       </main>
+
+      <footer className="border-t border-line bg-paper">
+        <Container className="flex flex-col gap-2 py-5 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
+          <p>TrustChain · Proof that products are safe, not just genuine.</p>
+          <div className="flex gap-5">
+            <Link to="/verify" className="hover:text-ink">Check a product</Link>
+            <Link to="/contact?topic=report" className="hover:text-ink">Report a product</Link>
+            <Link to="/contact" className="hover:text-ink">Help</Link>
+          </div>
+        </Container>
+      </footer>
     </div>
   );
 }

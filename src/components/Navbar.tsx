@@ -6,9 +6,10 @@ import { Logo, Container } from './brand';
 
 const links = [
   { label: 'Check a product', href: '/verify' },
-  { label: 'For manufacturers', href: '/#manufacturers' },
-  { label: 'How it works', href: '/#how-it-works' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'Manufacturers', href: '/for/manufacturers' },
+  { label: 'Regulators', href: '/for/regulators' },
+  { label: 'Outlets', href: '/for/outlets' },
+  { label: 'Proof plan', href: '/#proof' },
 ];
 
 export default function Navbar() {
@@ -31,7 +32,7 @@ export default function Navbar() {
       <Container className="flex h-16 items-center justify-between gap-6">
         <Logo />
 
-        <nav aria-label="Main" className="hidden md:flex items-center gap-7 text-[0.95rem]">
+        <nav aria-label="Main" className="hidden lg:flex items-center gap-6 text-[0.95rem]">
           {links.map(l => (
             l.href.includes('#') ? (
               <a key={l.href} href={l.href} className="text-muted hover:text-ink transition-colors">{l.label}</a>
@@ -47,7 +48,7 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden lg:flex items-center gap-2">
           {user ? (
             <Link to="/dashboard" className="rounded-lg bg-ledger-700 px-4 py-2 text-sm font-semibold text-white hover:bg-ledger-800">
               Open dashboard
@@ -63,7 +64,7 @@ export default function Navbar() {
         </div>
 
         <button
-          className="md:hidden -mr-2 rounded-lg p-2 text-ink hover:bg-mist"
+          className="lg:hidden -mr-2 rounded-lg p-2 text-ink hover:bg-mist"
           onClick={() => setOpen(o => !o)}
           aria-expanded={open}
           aria-controls="mobile-menu"
@@ -74,11 +75,14 @@ export default function Navbar() {
       </Container>
 
       {open && (
-        <div id="mobile-menu" className="md:hidden border-t border-line bg-paper">
+        <div id="mobile-menu" className="lg:hidden border-t border-line bg-paper">
           <Container className="py-4 flex flex-col">
             {links.map(l => (
-              <a key={l.href} href={l.href} className="py-3 text-[1.05rem] text-ink border-b border-line last:border-0">{l.label}</a>
+              l.href.includes('#')
+                ? <a key={l.href} href={l.href} className="py-3 text-[1.05rem] text-ink border-b border-line">{l.label}</a>
+                : <Link key={l.href} to={l.href} className="py-3 text-[1.05rem] text-ink border-b border-line">{l.label}</Link>
             ))}
+            <Link to="/contact" className="py-3 text-[1.05rem] text-ink">Contact</Link>
             <div className="mt-4 grid grid-cols-2 gap-3">
               <Link to={user ? '/dashboard' : '/login'} className="rounded-lg border border-line px-4 py-3 text-center font-medium">
                 {user ? 'Dashboard' : 'Sign in'}

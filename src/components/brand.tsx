@@ -65,3 +65,13 @@ export function DataMatrix({ seed = 'trustchain', size = 112, modules = 16, colo
 export function Container({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return <div className={`mx-auto w-full max-w-[1180px] px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>;
 }
+
+/** Honest build status shown next to every capability. */
+export type BuildStatus = 'Available now' | 'Working prototype' | 'In development' | 'Planned';
+export function StatusTag({ status, dark = false }: { status: BuildStatus; dark?: boolean }) {
+  const live = status === 'Available now';
+  const cls = dark
+    ? (live ? 'bg-white text-ledger-800' : 'bg-ledger-700 text-ledger-100')
+    : (live ? 'bg-genuine-bg text-genuine' : 'bg-mist text-muted');
+  return <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${cls}`}>{status}</span>;
+}
