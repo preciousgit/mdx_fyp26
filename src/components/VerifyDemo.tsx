@@ -1,25 +1,26 @@
 import React, { useId, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle2, AlertTriangle, OctagonX, SearchX } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, OctagonX, Thermometer } from 'lucide-react';
 import { DataMatrix } from './brand';
 
-type Outcome = 'genuine' | 'copied' | 'recalled';
+type Outcome = 'safe' | 'heat' | 'recalled' | 'copied';
 
 interface DemoPack {
   code: string;
   label: string;
-  product: string;
-  maker: string;
   batch: string;
   expiry: string;
   outcome: Outcome;
 }
 
 /* Sample packs for the demo only. The manufacturer is fictional. */
+const PRODUCT = 'Artemether/Lumefantrine 80/480 mg, 6 tablets';
+const MAKER = 'Kanem Pharma (sample)';
 const PACKS: DemoPack[] = [
-  { code: 'TC7K-Q492-XMBD', label: 'Genuine pack', product: 'Artemether/Lumefantrine 80/480 mg, 6 tablets', maker: 'Kanem Pharma (sample)', batch: 'AL-2604', expiry: 'Mar 2028', outcome: 'genuine' },
-  { code: 'TC3P-81LW-ZR6A', label: 'Copied code', product: 'Artemether/Lumefantrine 80/480 mg, 6 tablets', maker: 'Kanem Pharma (sample)', batch: 'AL-2604', expiry: 'Mar 2028', outcome: 'copied' },
-  { code: 'TC9D-5HJ2-KT4N', label: 'Recalled batch', product: 'Artemether/Lumefantrine 80/480 mg, 6 tablets', maker: 'Kanem Pharma (sample)', batch: 'AL-2511', expiry: 'Nov 2027', outcome: 'recalled' },
+  { code: 'TC7K-Q492-XMBD', label: 'Genuine and safe', batch: 'AL-2604', expiry: 'Mar 2028', outcome: 'safe' },
+  { code: 'TC4H-T38R-WQ2E', label: 'Stored too hot', batch: 'AL-2609', expiry: 'Apr 2028', outcome: 'heat' },
+  { code: 'TC9D-5HJ2-KT4N', label: 'Recalled batch', batch: 'AL-2511', expiry: 'Nov 2027', outcome: 'recalled' },
+  { code: 'TC3P-81LW-ZR6A', label: 'Copied code', batch: 'AL-2604', expiry: 'Mar 2028', outcome: 'copied' },
 ];
 
 const norm = (s: string) => s.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -29,7 +30,7 @@ export default function VerifyDemo() {
   const navigate = useNavigate();
   const [value, setValue] = useState(PACKS[0].code);
   const [pack, setPack] = useState<DemoPack>(PACKS[0]);
-  const [result, setResult] = useState<DemoPack | 'missing' | null>(null);
+  const [result, setResult] = useState<DemoPack | null>(null);
   const [checks, setChecks] = useState(0);
 
   const choose = (p: DemoPack) => {
@@ -62,9 +63,9 @@ export default function VerifyDemo() {
         </div>
         <dl className="min-w-0 text-sm">
           <dt className="sr-only">Product</dt>
-          <dd className="font-semibold text-ink leading-snug">{pack.product}</dd>
+          <dd className="font-semibold leading-snug text-ink">{PRODUCT}</dd>
           <dt className="sr-only">Manufacturer</dt>
-          <dd className="text-muted">{pack.maker}</dd>
+          <dd className="text-muted">{MAKER}</dd>
           <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-muted">
             <span>Batch <span className="tnum text-ink">{pack.batch}</span></span>
             <span>Expires <span className="tnum text-ink">{pack.expiry}</span></span>
@@ -75,7 +76,7 @@ export default function VerifyDemo() {
       {/* The check */}
       <form onSubmit={check} className="p-5 sm:p-6">
         <label htmlFor={inputId} className="block text-sm font-medium text-ink">
-          Code under the scratch panel
+          Code on the pack
         </label>
         <div className="mt-2 flex gap-2">
           <input
@@ -93,7 +94,7 @@ export default function VerifyDemo() {
         </div>
 
         <fieldset className="mt-3">
-          <legend className="sr-only">Try a sample code</legend>
+          <legend className="sr-only">Try a sample pack</legend>
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <span className="text-muted">Try a sample:</span>
             {PACKS.map(p => (
@@ -118,39 +119,42 @@ export default function VerifyDemo() {
   );
 }
 
-function Result({ result }: { result: DemoPack | 'missing' }) {
-  if (result === 'missing') {
+function Result({ result }: { result: DemoPack }) {
+  if (result.outcome === 'safe') {
     return (
-      <Panel tone="caution" icon={<SearchX className="h-5 w-5" />} title="We can't find this code">
-        <p>Check you typed it exactly as printed. If it still isn't found, don't use the product.</p>
-      </Panel>
-    );
-  }
-  if (result.outcome === 'genuine') {
-    return (
-      <Panel tone="genuine" icon={<CheckCircle2 className="h-5 w-5" />} title="Genuine. This is the first check of this code.">
+      <Panel tone="genuine" icon={<CheckCircle2 className="h-5 w-5" />} title="Genuine, and kept within its safe range.">
         <ol className="mt-1 space-y-2">
-          <Step when="12 Aug 2026" text="Made and sealed by Kanem Pharma, Ikeja" />
-          <Step when="19 Aug 2026" text="Received by distributor in Onitsha, stored at 18°C" />
-          <Step when="27 Aug 2026" text="Delivered to a licensed pharmacy in Enugu" />
+          <Step when="12 Aug 2026" text="Made by Kanem Pharma, Ikeja" />
+          <Step when="19 Aug 2026" text="Distributor in Onitsha, stored at 22–26°C" />
+          <Step when="27 Aug 2026" text="Verified outlet in Enugu" />
         </ol>
       </Panel>
     );
   }
-  if (result.outcome === 'copied') {
+  if (result.outcome === 'heat') {
     return (
-      <Panel tone="recalled" icon={<OctagonX className="h-5 w-5" />} title="Don't use this pack. The code has been copied.">
+      <Panel tone="caution" icon={<Thermometer className="h-5 w-5" />} title="Genuine label, but this batch may not be safe.">
         <p>
-          This code was first checked in Lagos on 2 Sep 2026. It has since been checked <span className="tnum font-semibold">37</span> times in Kano, Kaduna and Abuja.
-          Each real code is meant to be checked once.
+          Batch AL-2609 spent <span className="tnum font-semibold">3 days</span> at 34–38°C in an Onitsha warehouse. The label limit is 30°C,
+          and heat can weaken this medicine. Ask for a pack from another batch. The batch has been sent for lab testing.
         </p>
-        <a href="/contact?topic=report" className="mt-3 inline-block font-semibold underline underline-offset-2">Report where you bought it</a>
+      </Panel>
+    );
+  }
+  if (result.outcome === 'recalled') {
+    return (
+      <Panel tone="caution" icon={<AlertTriangle className="h-5 w-5" />} title="Recalled. Return this pack to where you bought it.">
+        <p>The manufacturer recalled batch AL-2511 on 14 Oct 2026 after a failed quality test. Every outlet that received it has been told.</p>
       </Panel>
     );
   }
   return (
-    <Panel tone="caution" icon={<AlertTriangle className="h-5 w-5" />} title="Recalled. Return this pack to where you bought it.">
-      <p>The manufacturer recalled batch AL-2511 on 14 Oct 2026 after a failed quality test. Ask the pharmacy for a replacement from a different batch.</p>
+    <Panel tone="recalled" icon={<OctagonX className="h-5 w-5" />} title="Don't use this pack. The code has been copied.">
+      <p>
+        This code was first checked in Lagos on 2 Sep 2026. It has since been checked <span className="tnum font-semibold">37</span> times in Kano, Kaduna and Abuja,
+        and the brand and regulator have been alerted.
+      </p>
+      <a href="/contact?topic=report" className="mt-3 inline-block font-semibold underline underline-offset-2">Report where you bought it</a>
     </Panel>
   );
 }

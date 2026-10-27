@@ -59,13 +59,14 @@ function VerifyIntro() {
     <>
       <h1 className="display text-[2.6rem] sm:text-[3.4rem]">Check a product</h1>
       <p className="mt-4 text-[1.1rem] leading-relaxed text-muted">
-        Enter the code printed on the pack, usually under a scratch panel or next to the barcode. You'll see who made it,
-        where it has been, and whether there's any reason not to use it.
+        Enter the code printed on the pack. You'll see who made it, every hand it passed through, whether it was stored safely,
+        and whether it has been recalled.
       </p>
       <CodeForm />
       <ul className="mt-10 space-y-3 border-t border-line pt-8 text-[0.98rem] leading-relaxed text-muted">
         <li><span className="font-semibold text-ink">No account needed.</span> Anyone can check a code.</li>
         <li><span className="font-semibold text-ink">If a code is not found,</span> or is flagged, don't use the product. Keep the pack and receipt.</li>
+        <li><span className="font-semibold text-ink">Coming in 2027:</span> check the shop itself, and check by voice or USSD in Hausa, Yoruba, Igbo, Pidgin or English.</li>
         <li><span className="font-semibold text-ink">Medicines:</span> you can also check registration in NAFDAC's{' '}
           <a href="https://greenbook.nafdac.gov.ng/" target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-ink">Greenbook</a>.</li>
       </ul>
@@ -212,15 +213,15 @@ function getVerdict(p: any): { tone: Tone; icon: React.ReactNode; title: string;
       text: 'This is a registered product, but it is past its expiry date. Don’t use it.' };
   }
   if (p.status === 'flagged' || (p.riskScore ?? 0) > 50) {
-    return { tone: 'caution', icon: <AlertTriangle className="h-6 w-6" />, title: 'Registered, but a problem was reported',
-      text: 'A handler reported a storage or condition problem and a regulator is reviewing it. Ask the seller for another batch if you can.' };
+    return { tone: 'caution', icon: <AlertTriangle className="h-6 w-6" />, title: 'Genuine, but it may not be safe',
+      text: 'A handler reported a storage or condition problem with this batch, and a regulator is reviewing it. Ask the seller for a pack from another batch.' };
   }
   if (p.status === 'approved') {
     return { tone: 'genuine', icon: <CheckCircle2 className="h-6 w-6" />, title: 'Genuine and inspected',
-      text: 'This product is registered with TrustChain and passed a regulatory inspection.' };
+      text: 'This product is registered with TrustChain, passed a regulatory inspection, and no storage problems were reported.' };
   }
   return { tone: 'genuine', icon: <CheckCircle2 className="h-6 w-6" />, title: 'Genuine registered product',
-    text: 'This product is registered with TrustChain and no problems have been reported.' };
+    text: 'This product is registered with TrustChain and no storage or handling problems have been reported.' };
 }
 
 function checkLinks(events: any[]) {

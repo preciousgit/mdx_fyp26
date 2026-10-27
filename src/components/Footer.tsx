@@ -4,20 +4,23 @@ import { Logo, Container } from './brand';
 
 const columns = [
   {
-    title: 'Product',
+    title: 'Who it’s for',
     links: [
+      { label: 'Manufacturers and importers', to: '/for/manufacturers' },
+      { label: 'Regulators', to: '/for/regulators' },
+      { label: 'Pharmacies and outlets', to: '/for/outlets' },
       { label: 'Check a product', to: '/verify' },
-      { label: 'For manufacturers', to: '/#manufacturers' },
-      { label: 'How it works', to: '/#how-it-works' },
-      { label: 'Sign in', to: '/login' },
     ],
   },
   {
-    title: 'Company',
+    title: 'TrustChain',
     links: [
-      { label: 'Join the pilot', to: '/contact?topic=pilot' },
-      { label: 'Contact', to: '/contact' },
+      { label: 'How it works', to: '/#how-it-works' },
+      { label: 'Proof plan', to: '/#proof' },
+      { label: 'Integrity Index', to: '/contact?topic=index' },
       { label: 'Report a suspicious product', to: '/contact?topic=report' },
+      { label: 'Contact', to: '/contact' },
+      { label: 'Sign in', to: '/login' },
     ],
   },
 ];
@@ -30,7 +33,7 @@ export default function Footer() {
           <div className="max-w-sm">
             <Logo />
             <p className="mt-4 text-[0.95rem] leading-relaxed text-muted">
-              Unique codes and a shared record for every pack, so manufacturers, distributors, regulators and shoppers can tell real products from fakes.
+              Proof that products are safe, not just genuine. Recalls that reach every shelf, and evidence that stops the suppliers of fakes.
             </p>
           </div>
           {columns.map(col => (

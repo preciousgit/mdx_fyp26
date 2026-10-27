@@ -8,9 +8,9 @@ import { Logo, DataMatrix } from '../components/brand';
 /* Regulators are not offered self sign-up: their accounts can recall products
    and see every company's data, so they are created by invitation only. */
 const roles: { id: Role; icon: typeof Factory; label: string; desc: string }[] = [
-  { id: 'producer', icon: Factory, label: 'Manufacturer or brand', desc: 'Register products and print codes' },
+  { id: 'producer', icon: Factory, label: 'Manufacturer or importer', desc: 'Register batches, track them, run recalls' },
   { id: 'distributor', icon: Truck, label: 'Distributor', desc: 'Record handoffs and storage conditions' },
-  { id: 'consumer', icon: UserRound, label: 'Shopper', desc: 'Check products and leave reviews' },
+  { id: 'consumer', icon: UserRound, label: 'Shopper', desc: 'Leave reviews and get recall alerts' },
 ];
 
 const field = 'w-full rounded-lg border border-line bg-paper px-3.5 py-3 text-[0.98rem] text-ink placeholder:text-faint focus:border-ledger-500 focus:outline-none';
@@ -86,9 +86,9 @@ export default function Login() {
           <div className="inline-block rounded-lg bg-white p-3">
             <DataMatrix seed="sign-in" size={96} modules={14} color="#0E4D3A" />
           </div>
-          <p className="display-md mt-8 text-[2.2rem]">Every pack, one record, shared by everyone who handles it.</p>
+          <p className="display-md mt-8 text-[2.2rem]">Genuine isn’t the same as safe.</p>
           <p className="mt-4 leading-relaxed text-ledger-100">
-            Manufacturers register batches, distributors log each handoff, regulators see the whole chain and shoppers check before they buy.
+            One record of every batch, shared by the manufacturers, distributors, outlets and regulators who handle it, so bad stock is found and recalled fast.
           </p>
         </div>
         <p className="text-sm text-ledger-200">Shopping? You don't need an account. <Link to="/verify" className="underline underline-offset-2 hover:text-white">Check a product</Link></p>
@@ -102,7 +102,7 @@ export default function Login() {
           {step === 'auth' ? (
             <>
               <h1 className="display-md text-[2rem]">{isSignUp ? 'Create your account' : 'Sign in'}</h1>
-              <p className="mt-2 text-muted">{isSignUp ? 'For manufacturers, brands, distributors and shoppers.' : 'Welcome back to TrustChain.'}</p>
+              <p className="mt-2 text-muted">{isSignUp ? 'For manufacturers, importers, distributors and shoppers.' : 'Welcome back to TrustChain.'}</p>
 
               <form onSubmit={handleEmailAuth} className="mt-8 space-y-5" noValidate={false}>
                 <div>

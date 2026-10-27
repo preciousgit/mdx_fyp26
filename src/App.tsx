@@ -9,6 +9,7 @@ import ProductDetails from './pages/ProductDetails';
 import Profile from './pages/Profile';
 import ConsumerPortal from './pages/ConsumerPortal';
 import Analytics from './pages/Analytics';
+import Audience from './pages/Audience';
 import Layout from './components/Layout';
 
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode; allowedRoles?: string[] }) => {
@@ -37,6 +38,7 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/verify" element={<ConsumerPortal />} />
           <Route path="/verify/:id" element={<ConsumerPortal />} />
+          <Route path="/for/:who" element={<Audience />} />
 
           {/* Protected – dashboard shell */}
           <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>

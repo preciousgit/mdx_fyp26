@@ -6,7 +6,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Container } from '../components/brand';
 
-type Topic = 'pilot' | 'regulator' | 'report' | 'general';
+type Topic = 'pilot' | 'regulator' | 'outlet' | 'index' | 'report' | 'general';
 
 const topics: Record<Topic, { label: string; heading: string; intro: string; subject: string }> = {
   pilot: {
@@ -20,6 +20,18 @@ const topics: Record<Topic, { label: string; heading: string; intro: string; sub
     heading: 'Request regulator access',
     intro: 'Regulator accounts can see every company’s records and order recalls, so we verify each one before it is created. Use your official email address.',
     subject: 'Regulator access request',
+  },
+  outlet: {
+    label: 'Register an outlet',
+    heading: 'Join the Verified Outlet waitlist',
+    intro: 'For pharmacies, patent medicine stores and agro-dealers. We’re enrolling about 50 outlets in Enugu for the 2027 pilot, then opening more areas. Tell us where you are and what you sell.',
+    subject: 'Verified Outlet waitlist',
+  },
+  index: {
+    label: 'Integrity Index',
+    heading: 'Get the Nigeria Product Integrity Index',
+    intro: 'A quarterly, independent figure for how many products fail, with open methods. The first edition follows the 2027 pilot. We’ll email it to you, and nothing else.',
+    subject: 'Integrity Index subscription',
   },
   report: {
     label: 'Report a product',
@@ -56,7 +68,7 @@ export default function Contact() {
       form.org && `Organisation: ${form.org}`,
       topic === 'report' && form.code && `Product code: ${form.code}`,
       topic === 'report' && form.where && `Bought at: ${form.where}`,
-      form.message,
+      form.message || (topic === 'index' ? 'Please send me the Integrity Index.' : ''),
     ].filter(Boolean);
     try {
       setLoading(true);
@@ -107,8 +119,8 @@ export default function Contact() {
             {sent ? (
               <div className="result-in rounded-2xl border border-genuine/30 bg-genuine-bg p-8" role="status">
                 <CheckCircle2 className="h-7 w-7 text-genuine" aria-hidden="true" />
-                <h2 className="display-md mt-4 text-[1.7rem]">Message sent</h2>
-                <p className="mt-2 leading-relaxed">Thanks, {form.name.split(' ')[0] || 'there'}. We’ll reply to {form.email} within two working days.</p>
+                <h2 className="display-md mt-4 text-[1.7rem]">{topic === 'index' ? 'You’re on the list' : 'Message sent'}</h2>
+                <p className="mt-2 leading-relaxed">Thanks, {form.name.split(' ')[0] || 'there'}. {topic === 'index' ? `We’ll send the first edition to ${form.email}.` : `We’ll reply to ${form.email} within two working days.`}</p>
                 <Link to="/" className="mt-6 inline-block font-semibold text-ledger-700 hover:underline">Back to home</Link>
               </div>
             ) : (
@@ -124,10 +136,12 @@ export default function Contact() {
                   </div>
                 </div>
 
-                {(topic === 'pilot' || topic === 'regulator') && (
+                {(topic === 'pilot' || topic === 'regulator' || topic === 'outlet' || topic === 'index') && (
                   <div>
-                    <label htmlFor={ids.org} className="mb-1.5 block text-sm font-medium">{topic === 'pilot' ? 'Company' : 'Agency and office'}</label>
-                    <input id={ids.org} required autoComplete="organization" value={form.org} onChange={set('org')} className={field} />
+                    <label htmlFor={ids.org} className="mb-1.5 block text-sm font-medium">
+                      {topic === 'pilot' ? 'Company' : topic === 'regulator' ? 'Agency and office' : topic === 'outlet' ? 'Outlet name and town' : 'Organisation (optional)'}
+                    </label>
+                    <input id={ids.org} required={topic !== 'index'} autoComplete="organization" value={form.org} onChange={set('org')} className={field} />
                   </div>
                 )}
 
@@ -144,17 +158,22 @@ export default function Contact() {
                   </div>
                 )}
 
-                <div>
-                  <label htmlFor={ids.msg} className="mb-1.5 block text-sm font-medium">
-                    {topic === 'pilot' ? 'What do you make, and how many packs a month?' : topic === 'report' ? 'What made you suspicious?' : 'Message'}
-                  </label>
-                  <textarea id={ids.msg} required rows={6} value={form.message} onChange={set('message')} className={`${field} resize-y`} />
-                </div>
+                {topic !== 'index' && (
+                  <div>
+                    <label htmlFor={ids.msg} className="mb-1.5 block text-sm font-medium">
+                      {topic === 'pilot' ? 'What do you make or import, and how many packs a month?'
+                        : topic === 'report' ? 'What made you suspicious?'
+                        : topic === 'outlet' ? 'What do you sell, and who supplies you?'
+                        : 'Message'}
+                    </label>
+                    <textarea id={ids.msg} required rows={6} value={form.message} onChange={set('message')} className={`${field} resize-y`} />
+                  </div>
+                )}
 
                 {error && <p role="alert" className="rounded-lg bg-recalled-bg px-3.5 py-3 text-sm text-recalled">{error}</p>}
 
                 <button type="submit" disabled={loading} className="rounded-lg bg-ledger-700 px-6 py-3 font-semibold text-white hover:bg-ledger-800 disabled:opacity-60">
-                  {loading ? 'Sending…' : 'Send message'}
+                  {loading ? 'Sending…' : topic === 'index' ? 'Subscribe' : 'Send message'}
                 </button>
               </form>
             )}
