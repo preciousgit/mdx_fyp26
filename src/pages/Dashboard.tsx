@@ -129,7 +129,7 @@ function StatusBadge({ status }: { status: string }) {
     rejected: 'bg-recalled-bg text-recalled border-recalled/25',
     delivered: 'bg-mist text-muted border-line',
   };
-  return <span className={`px-2.5 py-1 text-xs font-semibold rounded-full border capitalize ${map[status] || 'bg-mist text-muted border-line'}`}>{status}</span>;
+  return <span className={`whitespace-nowrap px-2.5 py-1 text-xs font-semibold rounded-full border ${map[status] || 'bg-mist text-muted border-line'}`}>{status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ')}</span>;
 }
 
 // ─── Wallet guard banner ───────────────────────────────────────────────────────
